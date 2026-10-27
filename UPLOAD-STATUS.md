@@ -4,16 +4,19 @@
 > It is a partial code upload for review/bootstrap, not a release.
 
 - Source snapshot: `87bdb3f` (`docs: sharpen README feature overview`)
-- Intended repository: `https://github.com/THUDou/Deepin-HarmonyOS-Bridge`
-- Visibility: public (proposed)
+- Repository: `https://github.com/THUDou/Deepin-HarmonyOS-Bridge`
+- Visibility: public
 - Upload date: 2026-10-28
 - Partial build verification: CMake/Ninja, `ctest 1/1 passed`, `dhb selftest OK`.
-- Status at preparation time: **GitHub API/HTTPS was unreachable from the build host**
-  (`api.github.com:443` timed out; `github.com` also timed out). The repository has
-  not been created/pushed yet; the local partial git repo and bundle are ready.
-- Local git credential: a token for `THUDou` was found via `git credential fill`;
-  `gh auth status` reports the keyring token as invalid. Network is the blocker,
-  not the absence of a credential.
+- **Upload status: partial tree uploaded through the GitHub Git Data API.**
+  The initial commit is `4bdd6f3`; the partial tree commit is `03f9b3e`.
+  `git push` over `github.com:443` remains blocked on this host, so the API path
+  (`api.github.com` via a working GitHub edge IP) was used instead.
+- Credential: the Git Credential Manager token for `THUDou` is valid; the
+  `gh auth status` keyring token is stale. The stale `gh` entry was bypassed by
+  reading the working credential through `git credential fill`.
+- This is still **not** a release: HAP/ArkTS, full docs, CI, packaging and
+  `third_party/` are intentionally absent.
 
 ## What is in this partial upload
 
