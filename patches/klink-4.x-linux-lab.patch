@@ -1,0 +1,178 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index d78bebe..820771e 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -8,6 +8,8 @@ option(APPSERVER "JNI BUILD" ON)
+ option(APPRUNALL "JNI BUILD" OFF)
+ 
+ set(top_path ${CMAKE_CURRENT_SOURCE_DIR})
++include_directories(${top_path}/third_party/bounds_checking_function/include)
++include_directories(${top_path}/third_party/include)
+ set(openssl_include_path "")
+ set(openssl_lib_path "")
+ set(openssl_libs "")
+@@ -23,7 +25,7 @@ if (host_system)
+     message("host_system is linux ...")
+     set(dsoftbus_data_path "/opt/dsoftbus")
+     set(devicetype "\"PC\"")
+-    set(ifname "\"wlx200db04f85ac\"") #网卡名称全称
++    set(ifname "\"eth0\"") #网卡名称全称
+ 
+     set(options
+         ${options}
+diff --git a/base/begetutil/src/parameter.cpp b/base/begetutil/src/parameter.cpp
+index 918af2e..f7972bb 100644
+--- a/base/begetutil/src/parameter.cpp
++++ b/base/begetutil/src/parameter.cpp
+@@ -121,7 +121,7 @@ int GetDevUdid(char *udid, int size)
+         return -1;
+     }
+     if (access(uuidFilePath, F_OK) == -1) {
+-        if ((fd = open(uuidFilePath, O_RDWR | O_CREAT)) > 0) {
++        if ((fd = open(uuidFilePath, O_RDWR | O_CREAT, 0600)) > 0) {
+             memset(udid, 0, size);
+             // TODO: 这里需要将UUID生成修改为SN码，linux|宽带设备的SN码暂时未确定，后续处理
+             uuid_t uuid_key;
+diff --git a/dsoftbus/sdk/transmission/session/cpp/src/session_service_impl.cpp b/dsoftbus/sdk/transmission/session/cpp/src/session_service_impl.cpp
+index 464af0c..80a4f2b 100644
+--- a/dsoftbus/sdk/transmission/session/cpp/src/session_service_impl.cpp
++++ b/dsoftbus/sdk/transmission/session/cpp/src/session_service_impl.cpp
+@@ -15,6 +15,8 @@
+ 
+ #include "session_service_impl.h"
+ 
++#include <mutex>
++
+ #include "session_impl.h"
+ #include "session_mock.h"
+ #include "softbus_bus_center.h"
+diff --git a/main/CMakeLists.txt b/main/CMakeLists.txt
+index 05daf55..5a8de6c 100644
+--- a/main/CMakeLists.txt
++++ b/main/CMakeLists.txt
+@@ -1,4 +1,2 @@
+ add_subdirectory(server)
+-add_subdirectory(business_demo)
+-add_subdirectory(devicemanagerclient)
+ add_subdirectory(devicemanagercmd)
+\ No newline at end of file
+diff --git a/main/devicemanagercmd/devicemanagercmd.cpp b/main/devicemanagercmd/devicemanagercmd.cpp
+index e2c2c45..c2d41c7 100644
+--- a/main/devicemanagercmd/devicemanagercmd.cpp
++++ b/main/devicemanagercmd/devicemanagercmd.cpp
+@@ -14,6 +14,7 @@
+  */
+ 
+ #include <stdio.h>
++#include <string.h>
+ #include <string>
+ #include <unistd.h>
+ #include <signal.h>
+@@ -40,6 +41,7 @@ const char *s_pkgName = "com.kylin.device.magr";
+ static int32_t s_sessionId = -1;
+ static char s_sessionName[128] = {0};
+ static AuthDeviceInfo s_local_deviceinfo;
++static bool s_authStarted = false;
+ 
+ static SubscribeInfo s_disc_sInfo = {.subscribeId = DISC_SUBSCRIBE_ID,
+                                      .mode = DISCOVER_MODE_ACTIVE,
+@@ -99,9 +101,14 @@ static void OnDeviceFound(const AuthDeviceInfo &info, bool isOnline)
+     if (isOnline) {
+         BD_LOGE("auth ");
+         PrintDeviceInfo(info);
+-    } else {
+-        BD_LOGE("unAuth ");
+-        PrintDeviceInfo(info);
++        return;
++    }
++    BD_LOGE("unAuth ");
++    PrintDeviceInfo(info);
++    if (!s_authStarted && access("/tmp/klink_auth_initiator", F_OK) == 0) {
++        s_authStarted = true;
++        int32_t ret = AuthenticateDevice(info.deviceId, DEVICE_AUTH_TYPE_CLOUD_SN);
++        BD_LOGE("AuthenticateDevice ret: %d", ret);
+     }
+ }
+ 
+@@ -157,9 +164,21 @@ void OnCancelDisplay()
+ std::string OnInputAuthInfo()
+ {
+     char pinCode[32] = {0};
+-    BD_LOGE("Please enter PinCode:");
+-    scanf("%s", pinCode);
+-    return pinCode;
++    for (int i = 0; i < 100; i++) {
++        FILE *file = fopen("/tmp/klink_pin", "r");
++        if (file != nullptr) {
++            if (fgets(pinCode, sizeof(pinCode), file) != nullptr) {
++                fclose(file);
++                pinCode[strcspn(pinCode, "\r\n")] = '\0';
++                BD_LOGE("Read PinCode from /tmp/klink_pin: %s", pinCode);
++                return pinCode;
++            }
++            fclose(file);
++        }
++        usleep(200 * 1000);
++    }
++    BD_LOGE("No PinCode in /tmp/klink_pin");
++    return "";
+ }
+ 
+ std::string OnAuthInfoError(int32_t num)
+@@ -178,13 +197,14 @@ static IUIStateUpdateCallback s_uiStateUpdateCb = {.OnShowAuthState = OnShowAuth
+                                                    .OnAuthInfoError = OnAuthInfoError};
+ static void OnAuthResult(const std::string &deviceId, const std::string &token, int32_t status, int32_t reason)
+ {
+-    return;
++    BD_LOGE("OnAuthResult deviceId: %s status: %d reason: %d", deviceId.c_str(), status, reason);
+ }
+ 
+ static bool OnCheckDeviceSNVaild(const std::string &deviceSn)
+ {
+-    // TODO: linux 基于远程SN认证待定
+-    return false;
++    // Lab only: accept the peer's device ID as a local SN credential.
++    BD_LOGE("OnCheckDeviceSNVaild: %s", deviceSn.c_str());
++    return true;
+ }
+ 
+ static std::string OnGetAuthCredential()
+@@ -331,6 +351,18 @@ int main(int argc, char *argv[])
+     RegisterAuthResultCallback(&s_authResultCb);
+     GetLocalDeviceInfo(s_local_deviceinfo);
+ 
++    PublishInfo publishInfo = {};
++    publishInfo.publishId = PUBLISH_ID;
++    publishInfo.mode = DISCOVER_MODE_ACTIVE;
++    publishInfo.medium = COAP;
++    publishInfo.freq = HIGH;
++    publishInfo.capability = CAPABILITY;
++    publishInfo.capabilityData = nullptr;
++    publishInfo.dataLen = 0;
++    publishInfo.ranging = false;
++    BD_LOGE("publish ret: %d", PublishDeviceDiscovery(publishInfo));
++    BD_LOGE("discovery ret: %d", StartDeviceDiscovery(s_disc_sInfo));
++
+     int choice;
+     do {
+         printf(
+diff --git a/third_party/coap/CMakeLists.txt b/third_party/coap/CMakeLists.txt
+index 449ec83..1b59026 100644
+--- a/third_party/coap/CMakeLists.txt
++++ b/third_party/coap/CMakeLists.txt
+@@ -1,6 +1,7 @@
+ add_compile_options()
+ 
+ include_directories(
++        "include"
+         "include/coap3"
+ )
+ 
+@@ -41,6 +42,7 @@ add_library(
+ )
+ 
+ target_include_directories(coap PUBLIC ${top_path}/third_party/include)
++target_include_directories(coap PUBLIC ${top_path}/third_party/bounds_checking_function/include)
+ target_link_directories(coap PUBLIC /opt/dsoftbus/lib)
+ target_link_libraries(coap 
+                       PUBLIC

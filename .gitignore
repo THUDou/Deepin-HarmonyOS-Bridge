@@ -1,0 +1,49 @@
+# Build output
+build/
+build-linux/
+out/
+cmake-build-*/
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.so.*
+*.dylib
+*.dll
+*.exe
+*.pdb
+
+# Vendored/reference sources fetched by scripts
+third_party/
+
+# DHB runtime data
+DHB-received/
+*.part
+*.log
+
+# Editors / OS
+.idea/
+.vscode/
+.cache/
+.DS_Store
+Thumbs.db
+
+# HarmonyOS / DevEco
+.hvigor/
+ohos/.hvigor/
+ohos/.idea/
+ohos/build/
+ohos/entry/build/
+ohos/entry/.preview/
+ohos/oh_modules/
+ohos/entry/oh_modules/
+ohos/local.properties
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Harness / local agent state
+.dsh/

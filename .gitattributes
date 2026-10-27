@@ -1,0 +1,11 @@
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.ico binary
+
+*.sh text eol=lf
+packaging/debian/rules text eol=lf
+
+# Generated patches contain normal unified-diff context lines.
+*.patch -whitespace

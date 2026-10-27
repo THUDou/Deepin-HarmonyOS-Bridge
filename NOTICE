@@ -1,0 +1,31 @@
+DHB - Deepin-HarmonyOS-Bridge
+Copyright 2026 The DHB Authors
+
+This product is licensed under the Apache License, Version 2.0. See LICENSE.
+
+DHB builds on, links against, or references the following open-source projects.
+They are not vendored into this repository unless explicitly stated.
+
+  * OpenHarmony communication_dsoftbus
+    Copyright (c) OpenHarmony contributors
+    Apache License 2.0
+    https://gitee.com/openharmony/communication_dsoftbus
+
+  * OpenHarmony distributed_screen / distributed_hardware_fwk
+    Copyright (c) OpenHarmony contributors
+    Apache License 2.0
+    https://gitee.com/openharmony/distributed_screen
+
+  * Klink (kylin-dsoftbus-standard)
+    Copyright (c) 2023-2024 KylinSoft Co., Ltd.
+    Apache License 2.0
+    https://gitee.com/openkylin/klink
+
+  * openEuler dsoftbus packaging
+    Copyright (c) openEuler contributors
+    Apache License 2.0 / MulanPSL-2.0 where applicable
+    https://gitee.com/src-openeuler/dsoftbus
+
+DHB does not include proprietary Huawei HarmonyOS "多屏协同" code or any
+closed-source vendor binary. Interoperability work is based on public protocol
+documentation and Apache-2.0 components.
