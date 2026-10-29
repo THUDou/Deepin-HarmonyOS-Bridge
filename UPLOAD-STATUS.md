@@ -31,7 +31,7 @@
 
 - Windows/MinGW CMake + `ctest 1/1` + `dhb selftest`
 - Windows/MSVC build fix: parenthesized `std::min` to avoid the `min` macro;
-  GitHub Actions rerun pending
+  GitHub Actions run `40924781610`: Linux + Windows both **success**
 - MSYS2 POSIX all tests
 - Ubuntu 22.04 container CMake + `ctest 1/1` + TCP loopback + UDP discovery
 - HAP compile with DevEco 26 / SDK 26 (`BUILD SUCCESSFUL`, unsigned)
