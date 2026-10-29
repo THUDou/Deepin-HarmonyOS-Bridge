@@ -3,7 +3,7 @@
 > **This is the full tracked source snapshot, not a release.**
 > HAP is unsigned; Gate A/B are not passed; no device runtime is claimed.
 
-- Source commit: `71ed145` (`docs: add Deepin 25 client and D-Bus contract`)
+- Source commit: `94ff633` (`test: validate Deepin D-Bus contract in CI`)
 - Repository: `https://github.com/THUDou/Deepin-HarmonyOS-Bridge`
 - Visibility: public
 - Snapshot date: 2026-10-30
