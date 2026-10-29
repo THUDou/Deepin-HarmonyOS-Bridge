@@ -1,8 +1,5 @@
 # DHB · Deepin-HarmonyOS-Bridge
 
-> **Partial upload:** this repository currently contains the Linux/Windows C++ core + KLink lab only. HAP/ArkTS, full docs, CI and packaging are not uploaded yet. See [UPLOAD-STATUS.md](UPLOAD-STATUS.md).
-
-
 **让 Deepin/UOS 和鸿蒙设备之间，传文件、同步剪贴板、配对连接，像在同一张桌面上。**
 
 DHB 是一个开源的跨端协同桥：Linux 侧是原生 C++17 CLI/daemon，鸿蒙侧是 ArkTS/HAP。
@@ -174,6 +171,7 @@ packaging/           deb / systemd 骨架（M1）
 - [KLink → OH 6.x rebase 报告](docs/11-softbus-6x-rebase-report.md)
 - [KLink 4.x Linux lab](docs/12-klink-linux-lab.md)
 - [建仓计划（CI / 标签 / release）](docs/13-repo-plan.md)
+- [AliOS 分布式软总线研究](docs/14-alios-softbus-notes.md)
 - [变更记录](CHANGELOG.md)
 - ADR：[dsoftbus 谱系](docs/adr/0001-dsoftbus-base.md) · [两档能力](docs/adr/0002-two-tier.md) · [二进制帧](docs/adr/0003-wire-protocol.md) · [C++/ArkTS](docs/adr/0004-cpp-arkts.md) · [4.x/6.x 双 profile](docs/adr/0005-softbus-profiles.md)
 

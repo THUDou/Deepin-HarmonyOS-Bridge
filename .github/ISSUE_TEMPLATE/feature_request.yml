@@ -1,0 +1,56 @@
+name: Feature request
+description: Propose a capability or an interoperability experiment
+title: "[feat] "
+labels: ["type:feature"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What user/developer problem does this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: What should DHB do? Keep the current mainline in mind.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - protocol / crypto
+        - Linux CLI / packaging
+        - HarmonyOS HAP / ArkTS
+        - KLink / dsoftbus
+        - discovery / pairing
+        - screen / input
+        - docs
+    validations:
+      required: true
+  - type: dropdown
+    id: gate
+    attributes:
+      label: Which gate does it affect?
+      options:
+        - Gate A (KLink 4.x ↔ OH 4.x)
+        - Gate B (OH 6.x ↔ KaihongOS 6.x)
+        - Gate C (App / TCP)
+        - M2 screen
+        - not gate-related
+        - unknown
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: What else could solve it? What is explicitly out of scope?
+  - type: checkboxes
+    id: honesty
+    attributes:
+      label: Claim discipline
+      options:
+        - label: I understand Gate A/B are not verified yet and will not describe them as supported.
+          required: true

@@ -1,0 +1,8 @@
+{
+  "modelVersion": "6.0.0",
+  "name": "dhb",
+  "version": "0.1.0",
+  "description": "DHB - Deepin-HarmonyOS-Bridge HarmonyOS client",
+  "dependencies": {},
+  "devDependencies": {}
+}

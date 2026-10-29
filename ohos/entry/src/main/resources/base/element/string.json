@@ -1,0 +1,20 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "DHB HarmonyOS client"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "DHB 深鸿桥"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "DHB 深鸿桥"
+    },
+    {
+      "name": "reason_datasync",
+      "value": "用于发现并连接同一局域网内的 Deepin/UOS 设备"
+    }
+  ]
+}

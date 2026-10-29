@@ -1,0 +1,9 @@
+{
+  "name": "entry",
+  "version": "0.1.0",
+  "description": "DHB HarmonyOS entry module",
+  "main": "",
+  "author": "The DHB Authors",
+  "license": "Apache-2.0",
+  "dependencies": {}
+}

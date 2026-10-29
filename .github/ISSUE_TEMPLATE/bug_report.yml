@@ -1,0 +1,72 @@
+name: Bug report
+description: Report a reproducible defect in DHB
+title: "[bug] "
+labels: ["type:bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not paste PSK values, pairing keys, certificates, `.p12` files, or
+        full device UDIDs. Redact logs before attaching them.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: A clear, concise description of the defect.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      description: Exact commands, files, devices, and network setup.
+      placeholder: |
+        1. Run `dhb serve ...`
+        2. Connect from ...
+        3. Observe ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior / logs
+      description: Include the smallest relevant log excerpt; redact secrets.
+      render: text
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - protocol / crypto
+        - Linux CLI / packaging
+        - HarmonyOS HAP / ArkTS
+        - KLink / dsoftbus
+        - discovery / pairing
+        - docs
+        - other
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version / commit
+      placeholder: "v0.1.0-alpha or git SHA"
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, kernel, compiler, DevEco/SDK, device model/API, Docker.
+      placeholder: |
+        Deepin 25 / Ubuntu 22.04 / Windows 11
+        g++ 11.4 / CMake 3.22
+        DevEco 26.0.0.851 / SDK 26.0.0.105
+    validations:
+      required: true

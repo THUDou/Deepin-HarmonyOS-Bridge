@@ -1,0 +1,12 @@
+#!/usr/bin/make -f
+%:
+	dh $@
+
+override_dh_auto_configure:
+	cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DDHB_BUILD_TESTS=OFF
+
+override_dh_auto_build:
+	cmake --build build -j
+
+override_dh_auto_install:
+	DESTDIR=$(CURDIR)/debian/dhb cmake --install build

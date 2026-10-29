@@ -1,0 +1,21 @@
+[Unit]
+Description=DHB cross-device bridge (Deepin/UOS)
+Documentation=https://github.com/your-org/dhb
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/dhb serve --dir %h/DHB
+Restart=on-failure
+RestartSec=2s
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=%h/DHB %h/.config/dhb
+# Uncomment after TLS/pairing UI lands:
+# Environment=DHB_LOG_LEVEL=info
+
+[Install]
+WantedBy=default.target

@@ -1,78 +1,54 @@
-# Partial upload status — NOT the complete DHB repository
+# DHB source snapshot — runtime still incomplete
 
-> **This repository is intentionally incomplete.**
-> It is a partial code upload for review/bootstrap, not a release.
+> **This is the full tracked source snapshot, not a release.**
+> HAP is unsigned; Gate A/B are not passed; no device runtime is claimed.
 
-- Source snapshot: `5276f01` (`fix: resume partial files by content hash`)
+- Source commit: `5276f01` (`fix: resume partial files by content hash`)
 - Repository: `https://github.com/THUDou/Deepin-HarmonyOS-Bridge`
 - Visibility: public
-- Upload date: 2026-10-28
-- Partial build verification: CMake/Ninja, `ctest 1/1 passed`, `dhb selftest OK`.
-- Resume fix: `.part` is now keyed by content SHA-256 instead of transfer id;
-  `testResumeFileTransfer` verifies `FILE_ACCEPT(offset=204807)` and cleanup.
-- **Upload status: partial tree uploaded through the GitHub Git Data API.**
-  The initial commit is `4bdd6f3`; the partial tree commit is `03f9b3e`; later
-  source/doc updates are in the repository history.
-  `git push` over `github.com:443` remains blocked on this host, so the API path
-  (`api.github.com` via a working GitHub edge IP) was used instead.
-- Credential: the Git Credential Manager token for `THUDou` is valid; the
-  `gh auth status` keyring token is stale. The stale `gh` entry was bypassed by
-  reading the working credential through `git credential fill`.
-- This is still **not** a release: HAP/ArkTS, most docs, CI, packaging and
-  `third_party/` are intentionally absent.
+- Snapshot date: 2026-10-30
+- Default branch: `main`
 
-## What is in this partial upload
+## Included
 
-- `include/`, `src/`, `apps/dhb-cli/`, `tests/`, `CMakeLists.txt`
-  — a buildable Linux/Windows C++ core snapshot.
-- `README.md`, `CHANGELOG.md`, `LICENSE`, `NOTICE`, `SECURITY.md`, `CONTRIBUTING.md`.
-- `docs/03-protocol.md`, `docs/08-verification-log.md`,
-  `docs/12-klink-linux-lab.md`, `docs/13-repo-plan.md`.
-- `scripts/build-klink-lab.sh`, `scripts/klink-lab-*.sh`.
-- `patches/klink-4.x-linux-lab.patch` and its README.
+- C++17 core: `include/`, `src/`, `apps/dhb-cli/`, `tests/`, `CMakeLists.txt`
+- HarmonyOS ArkTS/HAP source: `ohos/`
+- Docs: protocol, architecture, verification, softbus profiles, auth-first MVP,
+  KLink→OH6 rebase, KLink Linux lab, AliOS research, repo plan, ADRs
+- Scripts: build/asset/OHOS validation, KLink lab
+- `patches/klink-4.x-linux-lab.patch` (lab-only, not upstream)
+- `packaging/` deb/systemd skeleton
+- `.github/` CI, issue forms, PR template
 
-## What is NOT uploaded yet
+## Not included
 
-- `ohos/` — HarmonyOS ArkTS/HAP client and DevEco project.
-- `docs/01`, `02`, `04`, `05`, `06`, `07`, `09`, `10`, `11` and ADRs.
-- `.github/` — CI, issue forms, PR template.
-- `packaging/` — deb/systemd skeleton.
-- Full `scripts/` (asset generation, OHOS config checker, bootstrap).
-- `third_party/` — KLink/OpenHarmony clones.
-- Build outputs, HAP/APP files, `oh_modules/`, `local.properties`, certificates,
-  PSKs, and real-device logs.
+- `third_party/` clones (KLink/OpenHarmony)
+- Build outputs, `.hap`/`.app`, `oh_modules/`, `local.properties`
+- Signing certificates, PSKs, real-device logs
+- Any signed or installable HAP
 
-## What this partial snapshot can do
+## Verified at this snapshot
 
-- Build the Linux/Windows C++ core:
+- Windows/MinGW CMake + `ctest 1/1` + `dhb selftest`
+- MSYS2 POSIX all tests
+- Ubuntu 22.04 container CMake + `ctest 1/1` + TCP loopback + UDP discovery
+- HAP compile with DevEco 26 / SDK 26 (`BUILD SUCCESSFUL`, unsigned)
+- KLink 4.x Linux host build + two-container COAP discovery
+- KLink CLOUD_SN **lab** auth: `AUTH_REQUEST_FINISH`, both peers have `networkId`
+- Hash-based `.part` resume: 700 KiB file, offset 204807, final bytes and cleanup
 
-  ```bash
-  cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-  cmake --build build -j
-  ctest --test-dir build --output-on-failure
-  ./build/dhb selftest
-  ```
+## Still unverified
 
-- Run the local TCP file/pair/discovery demo (see `README.md`).
-- Inspect the DHB protocol and verification boundaries.
-- Reproduce the KLink 4.x host build only after fetching KLink separately:
-  `scripts/build-klink-lab.sh` expects `third_party/klink` and a Linux filesystem.
+- Gate A: KLink 4.x ↔ OH 4.1 / HarmonyOS 4.x
+- Gate B: OpenHarmony 6.0 ↔ KaihongOS 6.x
+- KLink PIN authentication (lab CLOUD_SN uses a permissive SN callback)
+- `GetAllNodeDeviceInfo` / `OpenSession` after lab auth
+- HAP signing, installation, runtime
+- TLS 1.3, screen collaboration, input control, notifications
+- Deepin 25/UOS real-machine build
 
-## What is still unverified
+## Notes
 
-- Gate A: KLink 4.x ↔ OH 4.1/HarmonyOS 4.x.
-- Gate B: OpenHarmony 6.0 ↔ KaihongOS 6.x.
-- HAP signing, installation, and runtime.
-- KLink PIN authentication (the lab CLOUD_SN path is permissive and lab-only).
-- TLS 1.3, screen collaboration, input control, notifications.
-- Deepin 25/UOS real-machine build.
-
-## Next upload phases
-
-1. Add `ohos/` (HAP/ArkTS), `docs/01–11`, ADRs, `.github/`, `packaging/`.
-2. Add the complete `scripts/` set and reproducibility notes.
-3. Add signed HAP/release assets only after signing and device verification.
-4. Update `docs/08` before claiming any Gate A/B result.
-
-If you are reading this on GitHub and the tree looks incomplete: **that is expected**.
-Use the full local repository or wait for the next upload phase.
+GitHub `git push` over `github.com:443` is blocked from the current build host;
+updates use the Git Data API with a valid Git Credential Manager token.
+The earlier `UPLOAD-STATUS.md` “partial” phase is superseded by this snapshot.

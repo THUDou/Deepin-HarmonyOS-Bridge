@@ -1,0 +1,19 @@
+Source: dhb
+Section: net
+Priority: optional
+Maintainer: The DHB Authors <dhb@example.com>
+Build-Depends: debhelper-compat (= 13), cmake, g++, ninja-build | make
+Standards-Version: 4.6.2
+Rules-Requires-Root: no
+Homepage: https://github.com/your-org/dhb
+
+Package: dhb
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Recommends: xdg-desktop-portal, pipewire
+Description: Deepin-HarmonyOS-Bridge
+ DHB connects OpenHarmony/KaihongOS devices with Deepin/UOS desktops.
+ This package provides the dhb CLI and the core file/clipboard bridge.
+ .
+ The screen-sharing and system-level dsoftbus features are delivered in a
+ later release and require additional system integration.
