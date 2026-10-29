@@ -33,7 +33,9 @@ python scripts/check-ohos-config.py
 - 构建通过（`dhb_core`、`dhb`、`dhb_tests`）。
 - `ctest`：**1/1 通过**。
 - `dhb selftest`：通过。
-- OHOS：19 个必需文件、10 个 JSON/JSON5 配置解析通过。
+- OHOS：20 个必需文件、11 个 JSON/JSON5 配置解析通过。
+- **断点续传**：预置 `.dhb-<sha256>.part`（700 KiB 文件的前 204807 字节），服务端接受
+  `FILE_ACCEPT(offset=204807)`，最终内容逐字节一致，`.part` 清理；测试 `testResumeFileTransfer` 通过。
 
 > Windows 下 `TcpTransport` 是 stub，所以这一步只覆盖协议、加密、内存传输、文件引擎。
 

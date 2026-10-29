@@ -3,19 +3,22 @@
 > **This repository is intentionally incomplete.**
 > It is a partial code upload for review/bootstrap, not a release.
 
-- Source snapshot: `87bdb3f` (`docs: sharpen README feature overview`)
+- Source snapshot: `5276f01` (`fix: resume partial files by content hash`)
 - Repository: `https://github.com/THUDou/Deepin-HarmonyOS-Bridge`
 - Visibility: public
 - Upload date: 2026-10-28
 - Partial build verification: CMake/Ninja, `ctest 1/1 passed`, `dhb selftest OK`.
+- Resume fix: `.part` is now keyed by content SHA-256 instead of transfer id;
+  `testResumeFileTransfer` verifies `FILE_ACCEPT(offset=204807)` and cleanup.
 - **Upload status: partial tree uploaded through the GitHub Git Data API.**
-  The initial commit is `4bdd6f3`; the partial tree commit is `03f9b3e`.
+  The initial commit is `4bdd6f3`; the partial tree commit is `03f9b3e`; later
+  source/doc updates are in the repository history.
   `git push` over `github.com:443` remains blocked on this host, so the API path
   (`api.github.com` via a working GitHub edge IP) was used instead.
 - Credential: the Git Credential Manager token for `THUDou` is valid; the
   `gh auth status` keyring token is stale. The stale `gh` entry was bypassed by
   reading the working credential through `git credential fill`.
-- This is still **not** a release: HAP/ArkTS, full docs, CI, packaging and
+- This is still **not** a release: HAP/ArkTS, most docs, CI, packaging and
   `third_party/` are intentionally absent.
 
 ## What is in this partial upload

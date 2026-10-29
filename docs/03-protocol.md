@@ -180,7 +180,7 @@ session_key = HKDF-SHA256(
 接收端流程：
 
 1. 净化文件名；创建接收目录。
-2. 若 `.dhb-<id>.part` 存在且 ≤ `size`，从该大小续传；否则截断。
+2. 若 `.dhb-<sha256>.part` 存在且 ≤ `size`，从该大小续传；否则截断。用内容哈希而不是 transfer id 命名，重连/重试换了 id 也能续传。
 3. 发 `FILE_ACCEPT(id, offset)`。
 4. 每个 chunk 必须 `offset == 当前偏移`，写入 + 增量 SHA-256。
 5. 收到 `FILE_DONE`：`flush/close`，比较大小与哈希。

@@ -396,8 +396,11 @@ bool Session::handleFileOffer(const Frame& frame, std::string* err) {
   std::lock_guard<std::mutex> lock(receiver_mutex_);
   if (receiver_ && receiver_->active) return reject(3, "another transfer is active");
 
-  const std::filesystem::path part =
-      config_.recv_dir / (".dhb-" + std::to_string(offer.id) + ".part");
+  // Name the part by content hash, not transfer id: a retry/reconnect gets a
+  // new id, but the same file must still find its previous partial data.
+  const std::string part_hash =
+      crypto::toHex(ByteView(offer.sha256.data(), offer.sha256.size()));
+  const std::filesystem::path part = config_.recv_dir / (".dhb-" + part_hash + ".part");
   std::uint64_t offset = 0;
   if (std::filesystem::exists(part, ec)) {
     const auto existing_size = std::filesystem::file_size(part, ec);

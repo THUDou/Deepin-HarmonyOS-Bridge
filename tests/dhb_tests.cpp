@@ -354,6 +354,94 @@ void testSessionAndFileTransfer() {
   std::filesystem::remove_all(dir);
 }
 
+void testResumeFileTransfer() {
+  const auto dir = makeTempDir("resume");
+  const auto recv_dir = dir / "recv";
+  std::filesystem::create_directories(recv_dir);
+
+  const std::vector<std::uint8_t> content = makePattern(700 * 1024 + 13);
+  const std::uint64_t resume_at = 200 * 1024 + 7;
+  const auto source = dir / "resume.bin";
+  {
+    std::ofstream out(source.string(), std::ios::binary);
+    out.write(reinterpret_cast<const char*>(content.data()),
+              static_cast<std::streamsize>(content.size()));
+  }
+
+  const auto hash = dhb::crypto::sha256(dhb::ByteView(content));
+  const std::string hash_hex = hex32(hash);
+  const auto part = recv_dir / (".dhb-" + hash_hex + ".part");
+  {
+    std::ofstream out(part.string(), std::ios::binary);
+    out.write(reinterpret_cast<const char*>(content.data()),
+              static_cast<std::streamsize>(resume_at));
+  }
+
+  auto pair = dhb::makeMemoryTransportPair();
+
+  dhb::SessionConfig server_config;
+  server_config.local.id = "resume-server";
+  server_config.local.name = "Deepin Resume Test";
+  server_config.local.os = "Deepin/UOS Linux";
+  server_config.local.app_version = "0.1.0";
+  server_config.psk = "resume test psk";
+  server_config.recv_dir = recv_dir;
+  server_config.is_client = false;
+
+  dhb::Session server(std::move(pair.second), server_config);
+  ReceivedFile received;
+  std::atomic<bool> saw_resume{false};
+  server.setLogHandler([&](std::string message) {
+    if (message.find("resume at " + std::to_string(resume_at)) != std::string::npos) {
+      saw_resume.store(true);
+    }
+  });
+  server.setFileReceivedHandler([&](const std::filesystem::path& path) {
+    std::lock_guard<std::mutex> lock(received.mutex);
+    received.path = path;
+    received.ready = true;
+    received.cv.notify_all();
+  });
+
+  std::thread server_thread([&] {
+    std::string err;
+    CHECK(server.handshake(&err));
+    CHECK(server.start(&err));
+  });
+
+  dhb::SessionConfig client_config = server_config;
+  client_config.local.id = "resume-client";
+  client_config.local.name = "HarmonyOS Resume Test";
+  client_config.local.os = "HarmonyOS";
+  client_config.is_client = true;
+  dhb::Session client(std::move(pair.first), client_config);
+
+  std::string err;
+  CHECK(client.handshake(&err));
+  CHECK(client.start(&err));
+  server_thread.join();
+
+  CHECK(client.sendFile(source, nullptr, &err));
+  {
+    std::unique_lock<std::mutex> lock(received.mutex);
+    CHECK(received.cv.wait_for(lock, std::chrono::seconds(5),
+                               [&] { return received.ready; }));
+    CHECK(received.ready);
+    if (received.ready) {
+      std::ifstream input(received.path.string(), std::ios::binary);
+      const std::vector<std::uint8_t> saved((std::istreambuf_iterator<char>(input)),
+                                            std::istreambuf_iterator<char>());
+      CHECK(saved == content);
+    }
+  }
+  CHECK(saw_resume.load());
+  CHECK(!std::filesystem::exists(part));
+
+  client.close();
+  server.close();
+  std::filesystem::remove_all(dir);
+}
+
 #ifndef _WIN32
 void testTcpSession() {
   auto dir = makeTempDir("tcp");
@@ -519,6 +607,7 @@ int main() {
   testMessages();
   testFilenameSafety();
   testSessionAndFileTransfer();
+  testResumeFileTransfer();
 #ifndef _WIN32
   testTcpSession();
 #endif
