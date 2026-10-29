@@ -44,6 +44,8 @@ DHB 是一个开源的跨端协同桥：Linux 侧是原生 C++17 CLI/daemon，�
 | **KLink 4.x legacy** | HarmonyOS 4.x / OpenHarmony 4.x / KaihongOS 4.x | 🧪 Linux host build + COAP 发现 + lab 认证；PIN/真机待验证 |
 | **OH 6.x modern** | OpenHarmony 6.0 / KaihongOS 6.x / 纯血 HarmonyOS 6.x（系统权限） | 📐 差异/rebase 报告完成；Linux host build 未开始 |
 
+> **纯血鸿蒙 PC 的“超级终端”是华为系统级能力，不是三方 HAP 的公开 API。** DHB 先做标准 HAP + TCP；PC 显示/超级终端接入属于 S3 研究，详见 [平台边界矩阵](docs/17-platform-taxonomy.md)。
+
 > **软总线版本策略**：KLink 只负责 **4.x legacy**；**6.x modern** 用 **OpenHarmony 6.0-Release** 的 `communication_dsoftbus`（openEuler 公开包是 3.2，只作 CI/legacy 参考）。两代用独立 helper daemon 隔离，不链进同一进程；**不假设 4.x↔6.x 原生互通**。详见 [软总线 profile](docs/09-softbus-profiles.md)、[认证优先的 MVP](docs/10-auth-first-mvp.md)、[ADR-0005](docs/adr/0005-softbus-profiles.md)。
 
 ## 当前实现边界（重要）
@@ -175,6 +177,7 @@ packaging/           deb / systemd 骨架（M1）
 - [AliOS 分布式软总线研究](docs/14-alios-softbus-notes.md)
 - [Deepin 25 客户端计划（DTK6 / DDE tray / D-Bus / Linyaps）](deepin/README.md)
 - [SKILL 研读：OH/KaihongOS 优先](docs/16-skill-study-openharmony-kaihong.md)
+- [平台边界矩阵（华为鸿蒙 / 纯血鸿蒙 PC / HarmonyOS Connect / KaihongOS / OHOS / 国产 Linux）](docs/17-platform-taxonomy.md)
 - [变更记录](CHANGELOG.md)
 - ADR：[dsoftbus 谱系](docs/adr/0001-dsoftbus-base.md) · [两档能力](docs/adr/0002-two-tier.md) · [二进制帧](docs/adr/0003-wire-protocol.md) · [C++/ArkTS](docs/adr/0004-cpp-arkts.md) · [4.x/6.x 双 profile](docs/adr/0005-softbus-profiles.md)
 
