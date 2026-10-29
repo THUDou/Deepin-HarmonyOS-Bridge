@@ -17,6 +17,7 @@
 13. [建仓计划](13-repo-plan.md) — 仓库身份、CI、标签、里程碑、release checklist。
 14. [AliOS 分布式软总线研究](14-alios-softbus-notes.md) — 官方口径、Fusion/SOME-IP/DDS、与 dsoftbus 的边界。
 15. [Deepin 25 客户端计划](../deepin/README.md) — DTK6/DDE tray/D-Bus/Linyaps 的分阶段设计。
+16. [SKILL 研读：OH/KaihongOS 优先](16-skill-study-openharmony-kaihong.md) — deveco-cli/harmonyos-agent-skills 的边界，DTK/DDE/Linyaps 取舍。
 
 架构决策：
 

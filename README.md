@@ -174,6 +174,7 @@ packaging/           deb / systemd 骨架（M1）
 - [建仓计划（CI / 标签 / release）](docs/13-repo-plan.md)
 - [AliOS 分布式软总线研究](docs/14-alios-softbus-notes.md)
 - [Deepin 25 客户端计划（DTK6 / DDE tray / D-Bus / Linyaps）](deepin/README.md)
+- [SKILL 研读：OH/KaihongOS 优先](docs/16-skill-study-openharmony-kaihong.md)
 - [变更记录](CHANGELOG.md)
 - ADR：[dsoftbus 谱系](docs/adr/0001-dsoftbus-base.md) · [两档能力](docs/adr/0002-two-tier.md) · [二进制帧](docs/adr/0003-wire-protocol.md) · [C++/ArkTS](docs/adr/0004-cpp-arkts.md) · [4.x/6.x 双 profile](docs/adr/0005-softbus-profiles.md)
 

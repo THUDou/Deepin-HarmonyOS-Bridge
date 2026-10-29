@@ -9,6 +9,8 @@
 - Deepin/UOS v25, DTK6 / Qt6.
 - The existing `dhb` CLI/daemon owns the protocol, files, clipboard and KLink
   helpers.
+- Skill selection and Huawei-vs-OH/KaihongOS boundaries:
+  [docs/16-skill-study-openharmony-kaihong.md](../docs/16-skill-study-openharmony-kaihong.md).
 - The desktop side only talks to it over D-Bus; it must not reimplement transfer
   logic.
 

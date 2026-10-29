@@ -3,7 +3,7 @@
 > **This is the full tracked source snapshot, not a release.**
 > HAP is unsigned; Gate A/B are not passed; no device runtime is claimed.
 
-- Source commit: `94ff633` (`test: validate Deepin D-Bus contract in CI`)
+- Source commit: `b603e88` (`docs: study HarmonyOS/OpenHarmony skills and boundaries`)
 - Repository: `https://github.com/THUDou/Deepin-HarmonyOS-Bridge`
 - Visibility: public
 - Snapshot date: 2026-10-30
