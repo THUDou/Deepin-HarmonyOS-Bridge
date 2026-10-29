@@ -3,7 +3,7 @@
 > **This is the full tracked source snapshot, not a release.**
 > HAP is unsigned; Gate A/B are not passed; no device runtime is claimed.
 
-- Source commit: `5276f01` (`fix: resume partial files by content hash`)
+- Source commit: `b592754` (`fix: avoid Windows min macro in memory transport`)
 - Repository: `https://github.com/THUDou/Deepin-HarmonyOS-Bridge`
 - Visibility: public
 - Snapshot date: 2026-10-30
@@ -30,6 +30,8 @@
 ## Verified at this snapshot
 
 - Windows/MinGW CMake + `ctest 1/1` + `dhb selftest`
+- Windows/MSVC build fix: parenthesized `std::min` to avoid the `min` macro;
+  GitHub Actions rerun pending
 - MSYS2 POSIX all tests
 - Ubuntu 22.04 container CMake + `ctest 1/1` + TCP loopback + UDP discovery
 - HAP compile with DevEco 26 / SDK 26 (`BUILD SUCCESSFUL`, unsigned)

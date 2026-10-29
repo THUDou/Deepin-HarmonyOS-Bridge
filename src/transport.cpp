@@ -99,7 +99,8 @@ class MemoryTransport final : public ITransport {
       }
       auto& front = incoming_->chunks.front();
       const std::size_t available = front.size() - incoming_->front_offset;
-      const std::size_t take = std::min(available, size - filled);
+      // Parentheses defeat the Windows `min` macro; MSVC must see std::min.
+      const std::size_t take = (std::min)(available, size - filled);
       if (take != 0) {
         std::memcpy(data + filled, front.data() + incoming_->front_offset, take);
       }
