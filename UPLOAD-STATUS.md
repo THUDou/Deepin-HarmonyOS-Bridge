@@ -3,7 +3,7 @@
 > **This is the full tracked source snapshot, not a release.**
 > HAP is unsigned; Gate A/B are not passed; no device runtime is claimed.
 
-- Source commit: `b592754` (`fix: avoid Windows min macro in memory transport`)
+- Source commit: `71ed145` (`docs: add Deepin 25 client and D-Bus contract`)
 - Repository: `https://github.com/THUDou/Deepin-HarmonyOS-Bridge`
 - Visibility: public
 - Snapshot date: 2026-10-30
@@ -11,7 +11,7 @@
 
 ## Included
 
-- C++17 core: `include/`, `src/`, `apps/dhb-cli/`, `tests/`, `CMakeLists.txt`
+- C++17 core: `include/`, `src/`, `apps/dhb-cli/`, `tests/`, `CMakeLists.txt`\n- Deepin 25 client plan + `deepin/org.dhb.Bridge.xml` (design, not built)
 - HarmonyOS ArkTS/HAP source: `ohos/`
 - Docs: protocol, architecture, verification, softbus profiles, auth-first MVP,
   KLink→OH6 rebase, KLink Linux lab, AliOS research, repo plan, ADRs

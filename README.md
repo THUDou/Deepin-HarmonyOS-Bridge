@@ -151,6 +151,7 @@ tests/               加密向量、帧编解码、内存传输、端到端文�
 ohos/                HarmonyOS ArkTS 客户端（DevEco 工程）
 docs/                研究、架构、协议、路线图、验证、lab、建仓计划
 scripts/             构建、KLink lab、OHOS 校验、图标生成
+deepin/              Deepin 25 客户端计划与 D-Bus 接口（未实现/未编译）
 patches/             KLink 4.x host bring-up patch（lab-only）
 packaging/           deb / systemd 骨架（M1）
 .github/             CI、issue/PR 模板
@@ -172,6 +173,7 @@ packaging/           deb / systemd 骨架（M1）
 - [KLink 4.x Linux lab](docs/12-klink-linux-lab.md)
 - [建仓计划（CI / 标签 / release）](docs/13-repo-plan.md)
 - [AliOS 分布式软总线研究](docs/14-alios-softbus-notes.md)
+- [Deepin 25 客户端计划（DTK6 / DDE tray / D-Bus / Linyaps）](deepin/README.md)
 - [变更记录](CHANGELOG.md)
 - ADR：[dsoftbus 谱系](docs/adr/0001-dsoftbus-base.md) · [两档能力](docs/adr/0002-two-tier.md) · [二进制帧](docs/adr/0003-wire-protocol.md) · [C++/ArkTS](docs/adr/0004-cpp-arkts.md) · [4.x/6.x 双 profile](docs/adr/0005-softbus-profiles.md)
 

@@ -16,6 +16,7 @@
 12. [KLink 4.x Linux lab](12-klink-linux-lab.md) — host 构建、两容器 COAP 发现、PIN 失败与 CLOUD_SN lab 认证。
 13. [建仓计划](13-repo-plan.md) — 仓库身份、CI、标签、里程碑、release checklist。
 14. [AliOS 分布式软总线研究](14-alios-softbus-notes.md) — 官方口径、Fusion/SOME-IP/DDS、与 dsoftbus 的边界。
+15. [Deepin 25 客户端计划](../deepin/README.md) — DTK6/DDE tray/D-Bus/Linyaps 的分阶段设计。
 
 架构决策：
 
