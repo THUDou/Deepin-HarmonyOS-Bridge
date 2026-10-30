@@ -16,6 +16,12 @@ All notable changes to DHB are documented here. The project follows
 - Deepin 25 WSL verification: DTK6 6.7.47.1, Qt6 6.8.0, `ll-builder` 1.14.3.
 - Scripts: `test-dbus-mvp.sh`, `test-dbus-pair.sh`, `test-tray-load.sh`.
 
+### Docs
+
+- KaihongOS Desktop 5.0.1 notes: VS Code + ARM64 devkit + API 11/14;
+  candidate API 14 HAP profile; Gate B0 added.
+- Clarified that KaihongOS Meta 6.1 platform docs are not a desktop SDK.
+
 ### Verified
 
 - Deepin 25 WSL: CMake build, `ctest` 1/1, `dhb selftest`.

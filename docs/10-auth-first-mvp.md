@@ -40,9 +40,20 @@
 - 失败处理：记录发现/PIN/认证错误码；换 openEuler 3.2 只用于对比，不改主基座。
 - Lab 进展：KLink 4.x host build + **Linux↔Linux COAP 发现**已通过；PIN 认证在 Linux CLI 上以 `status 5 / -20006` 失败；**CLOUD_SN lab 路径**以 `status 7 / reason 0` 建立可信关系并拿到 `networkId`。**这不等于 Gate A 通过**：对端不是 OH 4.1/HarmonyOS 4.x，且 lab 放行了 SN 校验。详见 [KLink 4.x Linux lab](12-klink-linux-lab.md)。
 
+### Gate B0 · KaihongOS 5.0.1 HAP baseline
+
+> 在谈 6.x 软总线前，先把 Kaihong 桌面版 5.0.1 的 HAP 基线跑通。
+> 官方 SDK 是 API 11/14，不是 target 20；详见 [KaihongOS 资料结论](18-kaihongos-desktop-5.0.1-notes.md)。
+
+- B0.1：API 14 HAP 构建 + OpenHarmony 签名 + `hdc install`。
+- B0.2：标准 TCP 文件/剪贴板（DHB 自有协议）通过。
+- B0.3：确认 KaihongOS 的 dsoftbus/device_auth 版本，再决定 5.x 还是 6.x helper。
+- 通过标准：应用启动、能连 Deepin `dhb serve`、文件真实到达；不要求软总线。
+- 注意：当前 HAP 是 `runtimeOS: HarmonyOS` / target 20，不能直接算 B0。
+
 ### Gate B · Modern 6.x
 
-- 环境：OpenHarmony 6.0-Release / KaihongOS 6.x；系统签名应用或 SA；`dhb-softbus6d` native 适配。
+- 环境：OpenHarmony 6.0-Release / KaihongOS 6.x（B0 之后）；系统签名应用或 SA；`dhb-softbus6d` native 适配。
 - 通过标准：HiChain 可信群组建立，`deviceManager`/trusted list 能看到对端；session 能打开。
 - 不要求：文件、屏幕。
 - 注意：纯血 HarmonyOS 6.x 三方应用仍受“多端协同仅系统应用”限制；如果拿不到系统权限，Gate B 只对 KaihongOS/开发板成立。

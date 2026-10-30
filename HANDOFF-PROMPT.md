@@ -32,6 +32,8 @@ C:\Deepin-HarmonyOS-Bridge；先把项目复制到你自己的工作区，例如
   不在 GUI 里重写协议。
 - H2（需 DevEco/hvigor + OH/Kaihong 设备）：HAP 只用标准 ArkTS/ArkUI，
   不引入华为 Kit/AGC；在 OpenHarmony/KaihongOS 上做安装/启动验证。
+  KaihongOS 5.0.1 是 API 11/14，不要用 target 20 的默认 profile 冒充；
+  先按 docs/18 与 ohos/profiles/kaihong-5.0.1.build-profile.json5 做 API 14。
 - H3（需 Linux + Docker/KLink）：补 KLink lab 的 GetAllNodeDeviceInfo、
   OpenSession、字节通道验证；只写 Linux↔Linux，不冒充 Gate A。
 - H4（任何 Linux）：TLS 1.3 或传输加密，基于 ITransport，保持现有测试。

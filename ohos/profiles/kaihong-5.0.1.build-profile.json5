@@ -1,0 +1,34 @@
+{
+  "app": {
+    "products": [
+      {
+        "name": "kaihong-5.0.1",
+        "compatibleSdkVersion": 14,
+        "targetSdkVersion": 14,
+        "runtimeOS": "OpenHarmony"
+      }
+    ],
+    "buildModeSet": [
+      {
+        "name": "debug"
+      },
+      {
+        "name": "release"
+      }
+    ]
+  },
+  "modules": [
+    {
+      "name": "entry",
+      "srcPath": "./entry",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "kaihong-5.0.1"
+          ]
+        }
+      ]
+    }
+  ]
+}

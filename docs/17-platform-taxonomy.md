@@ -29,7 +29,8 @@
 | HarmonyOS Connect 设备 / “智选 PC” | 认证设备/HiLink；PC 可能仍是 Windows/Linux/HarmonyOS | 只作为生态研究；先确认机型实际 OS | 没有公开 Linux 主机 SDK；Connect 认证不等于 HarmonyOS PC 的超级终端 | P3 |
 | OpenHarmony 4.x | OH 系统/HAP | KLink 4.x Gate A（发现/PIN/可信列表） | 不能假设华为商业鸿蒙 4.x 与 OH 4.x 完全互通 | P1 |
 | OpenHarmony 6.x | OH 系统/HAP/SA | dsoftbus 6.x + device_auth；Gate B | 不能拿 openEuler 3.2 代替 OH 6.0 | P1 |
-| KaihongOS 5.x/6.x | 厂商系统/HAP/SA | Pro 档：系统签名 HAP/SA，走厂商 dsoftbus/认证 | 不能假设它是 OHOS 原版；不能直接用华为 AGC 签名 | P1（Pro） |
+| KaihongOS 桌面版 5.0.1 | 厂商系统/HAP；官方工具为 VS Code + ARM64 Linux 容器 | HAP 构建/签名/安装；先做 API 14 的 TCP 文件/剪贴板 | 默认 SDK 是 API 11/14；不能拿 target 20 / HarmonyOS profile 直接套 | P1（Pro） |
+| KaihongOS Meta 6.1 | 平台侧超管/应用市场产品 | 只作生态/分发参考 | 不是 6.1 桌面 OS 的 SDK/API 文档 | P3 |
 | Deepin / UOS | Linux 桌面 | CLI/daemon + DTK6/DDE tray/GUI + Linyaps/deb | 不是 RPM 系；DTK 只适用于 DDE | P0 |
 | 银河麒麟 / OpenKylin | Linux 桌面（deb 系为主，需查文档） | CLI/daemon；可选 Qt/UKUI 集成 | 不能假设 DDE 插件可加载 | P1 |
 | OpenAnolis / OpenEuler | Linux 服务器/桌面（rpm 系） | CLI/daemon + RPM/systemd | 不能假设 deb/Linyaps 可用 | P1 |
@@ -86,10 +87,23 @@ KaihongOS 不是 OpenHarmony 原版，也不能简单等同于华为 HarmonyOS�
 
 上做厂商适配。因此：
 
+- **KaihongOS 桌面版 5.0.1 的官方北向链路是 VS Code + ArkTS Project Manager +
+  ARM64 Linux 容器 + `kaihongos-devkit-5.0.1.35-linux-arm64.deb`**；默认 SDK 是
+  **API 11/API 14**，不是 DevEco 的 API 20。
+- 当前 DHB HAP 是 `runtimeOS: HarmonyOS`、`targetSdkVersion 6.0.0(20)`；
+  **不能当作 KaihongOS 5.0.1 可安装包**。候选 profile 见
+  [ohos/profiles/kaihong-5.0.1.build-profile.json5](../ohos/profiles/kaihong-5.0.1.build-profile.json5)，
+  但尚未在 Kaihong SDK 上构建验证。
+- **Meta 6.1 的超管/应用市场文档不是 6.1 桌面 OS 的 SDK/API 文档**；不能据此推断 API 20。
+- **Gate B 的顺序改为**：B1 Kaihong 5.0.1 API 14 HAP 构建/签名/安装/启动 →
+  B2 标准 TCP 文件/剪贴板 → B3 厂商 dsoftbus/device_auth 版本确认 →
+  B4 OH 6.0 ↔ Kaihong 对应版本认证/session。
 - **Gate B 的基线仍是 OpenHarmony 6.0 源码**，KaihongOS 作为对端验证，不把 KaihongOS 私有改动当上游；
 - KaihongOS 侧必须使用厂商系统签名/文档，不使用华为 AGC 证书；
 - 不能假设 KaihongOS 6.x 与 OH 6.0 的 dsoftbus 二进制/协议完全一致，必须真机抓日志；
 - KaihongOS 5.x/4.x 走 Pro/KLink legacy 的对应路线，不混用 6.x helper。
+
+详细资料结论见 [KaihongOS 桌面版资料结论](18-kaihongos-desktop-5.0.1-notes.md)。
 
 ## 5. 国产 Linux：一套核心，多种包
 

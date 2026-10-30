@@ -22,7 +22,7 @@ DHB 是一个开源的跨端协同桥：Linux 侧是原生 C++17 CLI/daemon，�
 | **文本剪贴板** | ✅ 协议与客户端代码完成 | HAP UI 已接，真机权限/行为待验证 |
 | **Linux CLI** | ✅ 可用 | `serve` / `send` / `pair` / `recv` / `discover` / `doctor` / `selftest` |
 | **Deepin 桌面 MVP** | 🧪 实验可用 | `dhb-daemon` D-Bus + Pair/SendFile、DTK6 tray 插件加载、`dhb` CLI Linyaps build/export；无完整 DDE 面板，Linyaps runtime 未验 |
-| **HarmonyOS HAP** | ✅ 编译通过（unsigned） | DevEco 26 / SDK 26；未签名、未安装 |
+| **HarmonyOS HAP** | ✅ 编译通过（unsigned） | DevEco 26 / SDK 26；`runtimeOS: HarmonyOS`，不是 Kaihong 5.0.1 profile；未签名、未安装 |
 | **KLink 4.x lab** | 🧪 实验可用 | Linux host build、双容器 COAP 发现、CLOUD_SN lab 认证 |
 | **dsoftbus 6.x** | 📐 研究中 | 差异报告与 rebase 计划完成；Linux host build 未开始 |
 | **TLS 1.3** | 🚧 未实现 | 当前 TCP 明文，仅限开发/可信局域网 |
@@ -51,7 +51,7 @@ DHB 是一个开源的跨端协同桥：Linux 侧是原生 C++17 CLI/daemon，�
 
 ## 当前实现边界（重要）
 
-- **HAP 是 unsigned**：`entry-default-unsigned.hap` 已生成，但没有签名配置、没有真机安装/运行。
+- **HAP 是 unsigned 且不是 Kaihong profile**：`entry-default-unsigned.hap` 已生成，但 `runtimeOS: HarmonyOS` / target 20；KaihongOS 5.0.1 是 API 11/14，需单独 API 14 profile，尚未构建/安装。
 - **没有 OHOS/KaihongOS 真机认证**：KLink 只在 Linux↔Linux 容器里跑通发现和 CLOUD_SN lab 认证；PIN 仍失败。
 - **TCP 是明文**：`--insecure` 只用于本机回环；生产版要 TLS 1.3，尚未实现。
 - **屏幕/输入/通知未实现**：README 里标 🚧 的能力都还在路线图，不是现成功能。
@@ -180,6 +180,7 @@ packaging/           deb / systemd 骨架（M1）
 - [Deepin 25 客户端计划（DTK6 / DDE tray / D-Bus / Linyaps）](deepin/README.md)
 - [SKILL 研读：OH/KaihongOS 优先](docs/16-skill-study-openharmony-kaihong.md)
 - [平台边界矩阵（华为鸿蒙 / 纯血鸿蒙 PC / HarmonyOS Connect / KaihongOS / OHOS / 国产 Linux）](docs/17-platform-taxonomy.md)
+- [KaihongOS 桌面版 5.0.1 资料结论（ARM64 devkit / API 11/14 / Gate B）](docs/18-kaihongos-desktop-5.0.1-notes.md)
 - [GCL / 控制面（外部 Agent 入口）](CONTROL-PLANE.md)
 - [外部 Agent 交接提示词](HANDOFF-PROMPT.md)
 - [变更记录](CHANGELOG.md)

@@ -254,6 +254,7 @@ cmake --build build -j4
 | KLink 4.x Linux↔Linux CLOUD_SN lab 认证 | ✅ | `status 7 / reason 0`，双方有 `networkId` |
 | KLink 4.x ↔ OH 4.x/HarmonyOS 4.x 发现/PIN/可信列表 | ❌ | Gate A（docs/10） |
 | OpenHarmony 6.0 ↔ KaihongOS 6.x 认证/session | ❌ | Gate B（docs/10） |
+| KaihongOS 5.0.1（API 14）HAP 构建/签名/安装 | ❌ | 需 ARM64 devkit/VS Code；见 docs/18 |
 | Linux 内核/PipeWire/uinput | ❌ | M0 的 Deepin 侧 demo |
 | HarmonyOS HAP 编译（DevEco 26 / SDK 26） | ✅ unsigned | 产物已生成 |
 | DTK6 tray 完整 DDE 面板 | ❌ | 只验证了插件加载，无 DDE 会话 |

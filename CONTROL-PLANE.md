@@ -55,7 +55,8 @@
 - Ubuntu 22.04 容器：CMake/ctest/TCP 回环/UDP 发现。
 - HAP：DevEco 26 / SDK 26 编译通过，**unsigned**，未安装运行。
 - KLink 4.x：Linux host build + 两容器 COAP 发现 + CLOUD_SN lab 认证；PIN 未过、session 未验。
-- 未完成：Gate A/B、HAP 安装、完整 DDE 面板/`dhb-gui`、Linyaps **runtime**、TLS/屏幕/输入。
+- KaihongOS 资料：5.0.1 官方链路是 VS Code + ARM64 devkit + API 11/14；Meta 6.1 文档是平台侧，不是桌面 SDK；详见 `docs/18`。
+- 未完成：Gate A/B、Kaihong 5.0.1 API14 HAP、HAP 安装、完整 DDE 面板/`dhb-gui`、Linyaps **runtime**、TLS/屏幕/输入。
 
 ## 5. 外部 Agent 工作队列
 
@@ -68,7 +69,9 @@
 
 ### H2（需 DevEco/hvigor + OH/Kaihong 设备）
 HAP 兼容性收口：只使用标准 ArkTS/ArkUI，不引入华为 Kit；在 OpenHarmony/KaihongOS 上验证安装/启动；把结果写 `docs/08`。
-**不要**用华为 AGC 证书冒充 KaihongOS 系统签名。
+**KaihongOS 5.0.1 的 SDK 是 API 11/14，不是 target 20**；先按 `docs/18` 和
+`ohos/profiles/kaihong-5.0.1.build-profile.json5` 做 API 14 HAP，不要拿默认
+HarmonyOS profile 冒充 Kaihong。**不要**用华为 AGC 证书冒充 KaihongOS 系统签名。
 
 ### H3（需 Linux + Docker/KLink 源码）
 补 KLink lab 的 `GetAllNodeDeviceInfo` / `OpenSession` / 字节通道验证；基于 `docs/12` 与 `scripts/klink-lab-*`。

@@ -21,6 +21,7 @@
 17. [平台边界矩阵](17-platform-taxonomy.md) — 华为鸿蒙 4.x / 纯血鸿蒙 PC / HarmonyOS Connect / KaihongOS / OHOS / 国产 Linux。
 18. [GCL / 控制面](../CONTROL-PLANE.md) — 外部 Agent 的唯一入口、绝对路径、任务队列。
 19. [外部 Agent 提示词](../HANDOFF-PROMPT.md) — 可直接粘贴的交接提示词。
+20. [KaihongOS 桌面版 5.0.1 资料结论](18-kaihongos-desktop-5.0.1-notes.md) — VS Code/ARM64 devkit、API 11/14、HAP 签名与 Gate B 顺序。
 
 架构决策：
 
