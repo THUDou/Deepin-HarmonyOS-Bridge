@@ -8,6 +8,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 option(DHB_BUILD_TESTS "Build the DHB unit/integration tests" ON)
 option(DHB_BUILD_CLI "Build the dhb command line tool" ON)
+option(DHB_BUILD_DESKTOP "Build Deepin dhb-daemon and DTK6 tray (Linux/Qt6)" OFF)
 
 add_library(dhb_core STATIC
   src/crypto.cpp
@@ -45,3 +46,10 @@ endif()
 
 include(GNUInstallDirs)
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+if(DHB_BUILD_DESKTOP)
+  if(NOT UNIX)
+    message(FATAL_ERROR "DHB_BUILD_DESKTOP is Linux/Qt6 only")
+  endif()
+  add_subdirectory(deepin)
+endif()

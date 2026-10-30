@@ -51,10 +51,11 @@
 
 - Windows/MinGW + MSYS2 POSIX：`ctest 1/1`、`dhb selftest`、真实 TCP 文件、UDP 发现。
 - **Deepin 25 WSL**：CMake 构建、`ctest 1/1`、`dhb selftest` 通过；DTK6 6.7.47.1 / Qt6 6.8.0 / `dde-tray-loader-dev` / `ll-builder` 1.14.3 已安装。
+- **Deepin 桌面 MVP**：`dhb-daemon` D-Bus `GetStatus/ListDevices/Pair/SendFile` + 真实 TCP 文件传输通过；`dhb-tray` 由 `trayplugin-loader` 加载；`dhb` CLI Linyaps build/export 成功。
 - Ubuntu 22.04 容器：CMake/ctest/TCP 回环/UDP 发现。
 - HAP：DevEco 26 / SDK 26 编译通过，**unsigned**，未安装运行。
 - KLink 4.x：Linux host build + 两容器 COAP 发现 + CLOUD_SN lab 认证；PIN 未过、session 未验。
-- 未完成：Gate A/B、HAP 安装、DTK6 tray/GUI **代码**、Linyaps package、TLS/屏幕/输入。
+- 未完成：Gate A/B、HAP 安装、完整 DDE 面板/`dhb-gui`、Linyaps **runtime**、TLS/屏幕/输入。
 
 ## 5. 外部 Agent 工作队列
 

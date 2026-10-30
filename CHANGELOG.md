@@ -3,6 +3,25 @@
 All notable changes to DHB are documented here. The project follows
 [Semantic Versioning](https://semver.org/) once it reaches a stable release.
 
+## Unreleased
+
+### Added
+
+- `dhb-daemon`: Qt6DBus service `org.dhb.Bridge` with status/list/pair/send;
+  real TCP loopback file transfer verified.
+- `deepin/dhb-tray`: minimal `PluginsItemInterfaceV2` plugin; built and loaded
+  by `trayplugin-loader`.
+- `deepin/linglong.yaml`: source-build manifest for the `dhb` CLI; layer
+  build/export succeeds with `--skip-run-container`.
+- Deepin 25 WSL verification: DTK6 6.7.47.1, Qt6 6.8.0, `ll-builder` 1.14.3.
+- Scripts: `test-dbus-mvp.sh`, `test-dbus-pair.sh`, `test-tray-load.sh`.
+
+### Verified
+
+- Deepin 25 WSL: CMake build, `ctest` 1/1, `dhb selftest`.
+- D-Bus `Pair`/`SendFile`: 22-byte payload byte-identical on the server.
+- Tray plugin loader log: `Loaded plugin: "dhb-tray"`.
+
 ## v0.1.0-alpha — 2026-10-28
 
 ### Added

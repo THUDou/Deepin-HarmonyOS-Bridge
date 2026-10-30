@@ -21,6 +21,7 @@ DHB 是一个开源的跨端协同桥：Linux 侧是原生 C++17 CLI/daemon，�
 | **局域网发现** | ✅ 可用 | UDP 47822 广播；失败可手动填 IP |
 | **文本剪贴板** | ✅ 协议与客户端代码完成 | HAP UI 已接，真机权限/行为待验证 |
 | **Linux CLI** | ✅ 可用 | `serve` / `send` / `pair` / `recv` / `discover` / `doctor` / `selftest` |
+| **Deepin 桌面 MVP** | 🧪 实验可用 | `dhb-daemon` D-Bus + Pair/SendFile、DTK6 tray 插件加载、`dhb` CLI Linyaps build/export；无完整 DDE 面板，Linyaps runtime 未验 |
 | **HarmonyOS HAP** | ✅ 编译通过（unsigned） | DevEco 26 / SDK 26；未签名、未安装 |
 | **KLink 4.x lab** | 🧪 实验可用 | Linux host build、双容器 COAP 发现、CLOUD_SN lab 认证 |
 | **dsoftbus 6.x** | 📐 研究中 | 差异报告与 rebase 计划完成；Linux host build 未开始 |
@@ -54,6 +55,7 @@ DHB 是一个开源的跨端协同桥：Linux 侧是原生 C++17 CLI/daemon，�
 - **没有 OHOS/KaihongOS 真机认证**：KLink 只在 Linux↔Linux 容器里跑通发现和 CLOUD_SN lab 认证；PIN 仍失败。
 - **TCP 是明文**：`--insecure` 只用于本机回环；生产版要 TLS 1.3，尚未实现。
 - **屏幕/输入/通知未实现**：README 里标 🚧 的能力都还在路线图，不是现成功能。
+- **Deepin 桌面只是 MVP**：tray 是最小状态项，不是完整 DDE 面板/GUI；Linyaps 只完成 build/export，WSL 里 runtime check 未过。
 - **没有应用接续/流转**：平台限制多，不作为 MVP 承诺。
 
 ## 架构（当前代码路径）

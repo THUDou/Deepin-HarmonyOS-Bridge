@@ -1,0 +1,18 @@
+version: "1"
+
+package:
+  id: org.dhb.cli
+  name: dhb
+  version: 0.1.0.1
+  kind: app
+  description: |
+    DHB command line client: protocol, file transfer, clipboard and discovery.
+
+base: org.deepin.base/25.2.1
+
+command: [dhb]
+
+build: |
+  cmake -S . -B .dhb-build -DCMAKE_BUILD_TYPE=Release -DDHB_BUILD_TESTS=OFF
+  cmake --build .dhb-build -j
+  install -Dm755 .dhb-build/dhb "${PREFIX}/bin/dhb"

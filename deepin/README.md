@@ -1,8 +1,9 @@
 # DHB Deepin 25 client plan
 
-> This directory is the Deepin/DDE integration layer. It is a **plan + D-Bus
-> contract** today; the DTK6 tray/GUI and Linyaps package are not implemented
-> or built yet. Do not describe them as shipped.
+> This directory is the Deepin/DDE integration layer. The **D-Bus daemon and
+> minimal DTK6 tray plugin are implemented and built/tested in Deepin 25**;
+> `dhb-gui` and Linyaps runtime are not shipped. Do not describe the tray as a
+> complete DDE panel or the Linyaps layer as runtime-verified.
 
 ## 1. Target
 
@@ -27,6 +28,19 @@
 
 The tray plugin must implement `PluginsItemInterfaceV2` and load through
 `dde-tray-loader`; a plain `QSystemTrayIcon` is not the DDE v25 path.
+
+## 2.1 Current implementation (2026-10-30)
+
+- `apps/dhb-daemon`: Qt6DBus service `org.dhb.Bridge`; `GetStatus`/`ListDevices`/
+  `Pair`/`SendFile` tested end-to-end over a real TCP loopback session.
+- `deepin/dhb-tray`: minimal `PluginsItemInterfaceV2` status item; built and
+  loaded by `trayplugin-loader` (`Loaded plugin: "dhb-tray"`). No full DDE panel.
+- `deepin/linglong.yaml`: source-build manifest for `dhb`; build/export succeeds
+  with `--skip-run-container`. Runtime check fails in WSL nested containers
+  (`remount failed`), so the layer is not runtime-verified.
+- Build: `cmake -S . -B build -DDHB_BUILD_DESKTOP=ON`.
+- Tests: `scripts/test-dbus-mvp.sh`, `scripts/test-dbus-pair.sh`,
+  `scripts/test-tray-load.sh`.
 
 ## 3. D-Bus contract
 

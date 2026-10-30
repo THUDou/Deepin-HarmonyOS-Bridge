@@ -200,8 +200,41 @@ ctest --test-dir build --output-on-failure
   - `dde-tray-loader-dev`（`PluginsItemInterfaceV2` 头文件）
   - `linglong-builder` **1.14.3** / `linglong-bin`
 - `pkg-config --modversion dtk6widget` → `6.7.47`；`ll-builder --version` → `1.14.3`；
-- 安装时 `linglong` 的 PackageManager D-Bus 激活失败（WSL 没有完整 systemd/D-Bus），但 `ll-builder` 二进制可用；尚未执行 `ll-builder build`；
-- **DTK6 tray/GUI 和 Linyaps 包仍未编译**，只完成了工具链安装。
+- 安装时 `linglong` 的 PackageManager D-Bus 激活失败（WSL 没有完整 systemd/D-Bus），但 `ll-builder` 二进制可用；
+- `ll-builder` 后续实际构建结果见 2.10。
+
+### 2.10 Deepin 桌面 MVP：D-Bus + DTK6 tray + Linyaps CLI
+
+构建：
+
+```bash
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DDHB_BUILD_DESKTOP=ON
+cmake --build build -j4
+```
+
+结果：
+
+- `dhb-daemon`、`dhb-tray.so` 编译通过；
+- `ctest` **1/1 passed**；
+- D-Bus 接口实测（`dbus-run-session`）：
+  - `GetStatus` / `ListDevices` / `GetReceiveDir` / `SetReceiveDir` 可见；
+  - `SetReceiveDir("/tmp/dhb-recv2")` 返回 `true`，`GetReceiveDir` 返回新路径；
+  - `Pair("127.0.0.1", 47831, PSK)` 返回 `true`；
+  - `GetStatus.connected=true`，`ListDevices` 返回一个 Deepin peer；
+  - `SendFile("/tmp/dhb-send.txt")` 返回 `true`，服务端保存 22 字节，内容逐字节一致。
+- DTK6 tray：
+  - `QPluginLoader` ABI check：`loaded "dhb-tray" "DHB"`；
+  - `trayplugin-loader -p .../dhb-tray.so -g dhb` 日志：
+    `Loaded plugin: "dhb-tray"`、`itemAdded: "dhb-tray"`；
+  - 这是 **dde-tray-loader 的插件加载验证**，不是完整 DDE 会话/面板视觉验证（WSL 无 DDE 桌面）。
+- Linyaps：
+  - `ll-builder build -f deepin/linglong.yaml --skip-run-container` → `Build completed successfully`；
+  - `ll-builder export -f deepin/linglong.yaml --layer` 产出
+    `org.dhb.cli_0.1.0.1_x86_64_binary.layer`（157K，
+    SHA-256 `43646eb9...e2feb`）和 develop layer（2.2M，
+    SHA-256 `0cb88ce9...4732f`）；
+  - 不带 `--skip-run-container` 时，`Runtime Check` 在 WSL 嵌套容器里报
+    `remount failed after all fallbacks`，所以 **运行验证未通过**；这只是 WSL 容器限制，不能写成 Linyaps 已运行。
 
 ## 3. 还没有证明
 
@@ -209,7 +242,10 @@ ctest --test-dir build --output-on-failure
 |---|---|---|
 | Deepin 25 WSL：CMake + ctest + selftest | ✅ | `wsl -d deepin25` |
 | Deepin 25 WSL：DTK6/Qt6/tray 头文件 | ✅ 6.7.47.1 / Qt6 6.8.0 | 可开始编译 tray |
-| Deepin 25 WSL：`ll-builder` | ✅ 1.14.3（CLI） | 未执行 build |
+| Deepin 25 WSL：`ll-builder` | ✅ 1.14.3（CLI） | 已 build/export，见 2.10 |
+| Deepin 25 WSL：D-Bus daemon + Pair/SendFile | ✅ | `scripts/test-dbus-*.sh` |
+| Deepin 25 WSL：DTK6 tray 插件加载 | ✅（trayplugin-loader） | 无完整 DDE 面板 |
+| Linyaps `dhb` CLI build/export | ✅（`--skip-run-container`） | runtime check 未过 |
 | Deepin/UOS **实机** CMake + `dev-loopback.sh` | ❌ | 在真实 Deepin/UOS 硬件上跑 |
 | Ubuntu 22.04 容器：CMake + ctest + TCP/UDP | ✅ | `build-linux` + `dev-loopback.sh` |
 | KLink 4.x Linux host build（Ubuntu 容器） | ✅ | `scripts/build-klink-lab.sh` |
@@ -220,8 +256,9 @@ ctest --test-dir build --output-on-failure
 | OpenHarmony 6.0 ↔ KaihongOS 6.x 认证/session | ❌ | Gate B（docs/10） |
 | Linux 内核/PipeWire/uinput | ❌ | M0 的 Deepin 侧 demo |
 | HarmonyOS HAP 编译（DevEco 26 / SDK 26） | ✅ unsigned | 产物已生成 |
-| DTK6 tray / dhb-gui | ❌ | 工具链已装，代码未写/未编译 |
-| Linyaps 包 `dhb` | ❌ | `ll-builder` 已装，未 build |
+| DTK6 tray 完整 DDE 面板 | ❌ | 只验证了插件加载，无 DDE 会话 |
+| `dhb-gui` | ❌ | 未写/未编译 |
+| Linyaps `dhb` 运行 | ❌ | WSL 容器 remount 失败 |
 | HAP 真机签名/安装/运行 | ❌ | 配置签名 + 连接真机/模拟器 |
 | 屏幕协同（采集/编码/解码/回控） | ❌（仅设计） | M2 |
 | 性能（1080p30、CPU、文件吞吐） | ❌ | M2 基准 |
@@ -229,7 +266,7 @@ ctest --test-dir build --output-on-failure
 
 ## 4. 结论
 
-**核心协议、认证、文件引擎、发现、TCP 双向传输已经在 Windows/MSYS2、Ubuntu 22.04 容器与 Deepin 25 WSL 跑通；KLink 4.x host 栈已编译并完成两容器 COAP 发现 + CLOUD_SN lab 认证；HarmonyOS HAP 已用 DevEco 26 编译通过（unsigned）。Deepin 25 WSL 已装 DTK6 6.7.47.1/Qt6 6.8.0/`ll-builder` 1.14.3，但 tray/GUI/Linyaps 尚未编译。仍缺：生产 PIN 认证、OHOS/KaihongOS 真机、HAP 安装运行、Deepin/UOS 实机。**
+**核心协议、认证、文件引擎、发现、TCP 双向传输已经在 Windows/MSYS2、Ubuntu 22.04 容器与 Deepin 25 WSL 跑通；Deepin 25 上 `dhb-daemon` 的 D-Bus + Pair/SendFile 闭环、DTK6 tray 插件加载、`dhb` CLI 的 Linyaps build/export 已通过。KLink 4.x host 栈已编译并完成两容器 COAP 发现 + CLOUD_SN lab 认证；HarmonyOS HAP 已用 DevEco 26 编译通过（unsigned）。仍缺：生产 PIN 认证、OHOS/KaihongOS 真机、HAP 安装运行、Deepin/UOS 实机、完整 DDE 面板、Linyaps 运行。**
 
 因此当前状态是：
 

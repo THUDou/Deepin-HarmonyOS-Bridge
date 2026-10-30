@@ -3,7 +3,7 @@
 > **This is the full tracked source snapshot, not a release.**
 > HAP is unsigned; Gate A/B are not passed; no device runtime is claimed.
 
-- Source commit: `09cd479` (`docs: install DTK6 and Linyaps in Deepin25 WSL`)
+- Source commit: `610f927` (`feat: add Deepin D-Bus daemon, DTK6 tray and Linyaps CLI`)
 - Repository: `https://github.com/THUDou/Deepin-HarmonyOS-Bridge`
 - Visibility: public
 - Snapshot date: 2026-10-30
