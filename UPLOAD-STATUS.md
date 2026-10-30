@@ -3,7 +3,7 @@
 > **This is the full tracked source snapshot, not a release.**
 > HAP is unsigned; Gate A/B are not passed; no device runtime is claimed.
 
-- Source commit: `b5cfb71` (`docs: add KaihongOS Desktop 5.0.1 platform notes`)
+- Source commit: `8808588` (`docs: clarify Kaihong DevEco and VS Code routes`)
 - Repository: `https://github.com/THUDou/Deepin-HarmonyOS-Bridge`
 - Visibility: public
 - Snapshot date: 2026-10-30

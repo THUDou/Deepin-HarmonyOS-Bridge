@@ -43,7 +43,8 @@
 ### Gate B0 · KaihongOS 5.0.1 HAP baseline
 
 > 在谈 6.x 软总线前，先把 Kaihong 桌面版 5.0.1 的 HAP 基线跑通。
-> 官方 SDK 是 API 11/14，不是 target 20；详见 [KaihongOS 资料结论](18-kaihongos-desktop-5.0.1-notes.md)。
+> 官方 SDK 是 API 11/14，不是 target 20；可用 DevEco + Kaihong Public SDK，
+> 或 VS Code + ARM64 devkit。详见 [KaihongOS 资料结论](18-kaihongos-desktop-5.0.1-notes.md)。
 
 - B0.1：API 14 HAP 构建 + OpenHarmony 签名 + `hdc install`。
 - B0.2：标准 TCP 文件/剪贴板（DHB 自有协议）通过。

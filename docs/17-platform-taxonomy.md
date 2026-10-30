@@ -29,7 +29,7 @@
 | HarmonyOS Connect 设备 / “智选 PC” | 认证设备/HiLink；PC 可能仍是 Windows/Linux/HarmonyOS | 只作为生态研究；先确认机型实际 OS | 没有公开 Linux 主机 SDK；Connect 认证不等于 HarmonyOS PC 的超级终端 | P3 |
 | OpenHarmony 4.x | OH 系统/HAP | KLink 4.x Gate A（发现/PIN/可信列表） | 不能假设华为商业鸿蒙 4.x 与 OH 4.x 完全互通 | P1 |
 | OpenHarmony 6.x | OH 系统/HAP/SA | dsoftbus 6.x + device_auth；Gate B | 不能拿 openEuler 3.2 代替 OH 6.0 | P1 |
-| KaihongOS 桌面版 5.0.1 | 厂商系统/HAP；官方工具为 VS Code + ARM64 Linux 容器 | HAP 构建/签名/安装；先做 API 14 的 TCP 文件/剪贴板 | 默认 SDK 是 API 11/14；不能拿 target 20 / HarmonyOS profile 直接套 | P1（Pro） |
+| KaihongOS 桌面版 5.0.1 | 厂商系统/HAP；有 DevEco + Kaihong SDK、VS Code + ARM64 devkit 两条官方路径 | HAP 构建/签名/安装；先做 API 14 的 TCP 文件/剪贴板 | 默认 SDK 是 API 11/14；不能拿 target 20 / HarmonyOS profile 直接套 | P1（Pro） |
 | KaihongOS Meta 6.1 | 平台侧超管/应用市场产品 | 只作生态/分发参考 | 不是 6.1 桌面 OS 的 SDK/API 文档 | P3 |
 | Deepin / UOS | Linux 桌面 | CLI/daemon + DTK6/DDE tray/GUI + Linyaps/deb | 不是 RPM 系；DTK 只适用于 DDE | P0 |
 | 银河麒麟 / OpenKylin | Linux 桌面（deb 系为主，需查文档） | CLI/daemon；可选 Qt/UKUI 集成 | 不能假设 DDE 插件可加载 | P1 |
@@ -87,9 +87,10 @@ KaihongOS 不是 OpenHarmony 原版，也不能简单等同于华为 HarmonyOS�
 
 上做厂商适配。因此：
 
-- **KaihongOS 桌面版 5.0.1 的官方北向链路是 VS Code + ArkTS Project Manager +
-  ARM64 Linux 容器 + `kaihongos-devkit-5.0.1.35-linux-arm64.deb`**；默认 SDK 是
-  **API 11/API 14**，不是 DevEco 的 API 20。
+- **KaihongOS 桌面版 5.0.1 有两条官方北向链路**：
+  DevEco Studio + Kaihong Public SDK；或 VS Code + ArkTS Project Manager +
+  ARM64 Linux 容器 + `kaihongos-devkit-5.0.1.35-linux-arm64.deb`。两条路默认
+  SDK 都是 **API 11/API 14**，不是 DevEco 的 API 20。
 - 当前 DHB HAP 是 `runtimeOS: HarmonyOS`、`targetSdkVersion 6.0.0(20)`；
   **不能当作 KaihongOS 5.0.1 可安装包**。候选 profile 见
   [ohos/profiles/kaihong-5.0.1.build-profile.json5](../ohos/profiles/kaihong-5.0.1.build-profile.json5)，

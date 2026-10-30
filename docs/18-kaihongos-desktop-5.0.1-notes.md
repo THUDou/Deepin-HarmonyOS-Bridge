@@ -22,9 +22,25 @@ VS Code + ArkTS Project Manager + ARM64 Linux 容器 + `kaihongos-devkit`；
 | `KaihongOS Meta 6.1.0 产品说明书`（超管平台/应用市场） | 01 / 2026-07-30 | Meta 平台的管理/应用市场功能 | 不是 6.1 桌面 OS 的 API/SDK 文档 |
 | `kaihongos-devkit-5.0.1.35-linux-arm64.deb` | 5.0.1.35 / arm64 | 5.0.1 北向开发套件是 **ARM64** | 不能在 x86_64 WSL 里直接安装运行 |
 
-## 2. KaihongOS 5.0.1 的实际开发链
+## 2. KaihongOS 5.0.1 的两条官方开发链
 
-根据 5.0.1 ArkTS 插件指导：
+资料里其实有两条都成立的北向路径，不能只留一条：
+
+### A. DevEco Studio + KaihongOS Public SDK
+
+```text
+Windows / DevEco Studio
+  └── Customize > SDK > OpenHarmony
+        └── KaihongOS Public SDK（API 11 / API 14）
+              └── Hvigor 构建 HAP
+```
+
+- 北向应用开发指导书就是这条路线：HAP、Stage、Hvigor、签名、hdc。
+- SDK 由 Kaihong 提供，装到 DevEco 的 OpenHarmony SDK 位置。
+- 构建主机可以是 x86_64 Windows；**安装/运行才需要 Kaihong 设备**。
+- 这条路线不要求当前 WSL 安装 arm64 devkit。
+
+### B. VS Code + ArkTS Project Manager + ARM64 Linux 容器
 
 ```text
 KaihongOS PC / BotBook / BotMini（ARM64）
@@ -35,17 +51,18 @@ KaihongOS PC / BotBook / BotMini（ARM64）
               └── OpenHarmony SDK：API 11 / API 14
 ```
 
-关键点：
-
-- **不是必须用 DevEco Studio**；官方 5.0.1 指南主推 VS Code 插件。
+- 5.0.1 ArkTS 插件指导是这条路线：工程同步、自动签名、构建、一键部署、设备选择。
 - devkit 是 **linux-arm64**，安装目标是开鸿电脑里的 Linux 容器。
 - 实际解包核对（不安装）：`/opt/ohsdk/11` 与 `/opt/ohsdk/14` 两个 SDK 目录；
   另有 `/opt/node`、`/opt/ohpm-1.4.0`、aarch64 的 JDK 17 和 musl aarch64 loader。
   这印证了“API 11/14 + ARM64”的结论。
-- 新建工程时可选 API 11 / API 14；默认镜像自带这两个 SDK。
-- 插件提供：工程同步、自动签名、工程构建、一键部署/运行、设备选择。
-- 生成的是标准 HAP；通过 hdc 安装/拉起。
+
+### 共同点
+
+- 两条路都产出标准 HAP；都通过 hdc 安装/拉起。
+- 新建工程时可选 API 11 / API 14；不要用 API 20 的默认 HarmonyOS profile。
 - 签名是 OpenHarmony 体系（`.p12` + `.cer` + `.p7b`），不是华为 AGC。
+- 如果 Windows 上已有 DevEco + Kaihong SDK，**优先用 A**；B 是 Kaihong PC 上的另一条路。
 
 ## 3. 北向指导书里的 HAP 流程（通用部分）
 
@@ -106,19 +123,24 @@ runtimeOS: "HarmonyOS"
 - API 14 下 `@kit.*` 导入是否全部可用，要在 Kaihong SDK 上实际编译。
 - `DISTRIBUTED_DATASYNC` 的授权行为必须真机验证，不能从权限名推断。
 
-### 4.3 为什么不能在当前 WSL 里直接做
+### 4.3 当前环境能做什么、不能做什么
 
 - 当前 WSL 是 **x86_64 Deepin 25**；
-- devkit 是 **arm64**；
-- 官方安装路径是开鸿电脑的 Linux 容器，不是 x86 WSL；
-- 因此本轮只能做文档/配置分析，不能把 devkit 装进当前 WSL 并宣称构建成功。
+- devkit 是 **arm64**，不能直接装进当前 WSL；
+- 但 **DevEco + Kaihong Public SDK 的路线不要求 WSL**：构建在 Windows 上，
+  安装/运行才需要 Kaihong 设备；
+- 之前磁盘里的 Kaihong SDK 现在不可读；在磁盘恢复前，不能声称已经用
+  Kaihong SDK 编译过。
 
-可选路径：
+可行顺序：
 
-1. 有 KaihongOS ARM64 机器：按官方 VS Code 插件链路构建/签名/安装（首选）。
-2. 只有 x86 机器：找 Kaihong 的 x86 SDK/容器（若有），或用受支持的 ARM 构建机；
-   不把 QEMU 跑 arm64 devkit 当成官方验证。
-3. 华为鸿蒙 PC：走 HarmonyOS HAP/DevEco 路线，不能与 Kaihong 5.0.1 混用。
+1. 磁盘恢复后，先在 DevEco 里确认 Kaihong SDK 的 API 11/14 路径和版本；
+2. 用 DevEco 新建/编译一个 API 14 空 HAP，确认 Hvigor 和签名链；
+3. 有 Kaihong 设备时 `hdc install`；没有设备时只到构建/签名，不吹安装；
+4. 只有 Kaihong PC 时，再走 VS Code + ArkTS 插件的 ARM64 路线；
+5. x86 尝鲜版等镜像/硬盘回来再单独评估，不混进当前 Gate。
+
+华为鸿蒙 PC 则是 HarmonyOS HAP/DevEco 路线，不能与 Kaihong 5.0.1 的 SDK 混用。
 
 ### 4.4 Meta 6.1 不要误读
 
@@ -146,11 +168,11 @@ B1/B2 之前，不应该先承诺 B3/B4。
 
 ## 6. 待办
 
-1. 找 Kaihong 5.0.1 的 **x86_64 devkit**（若有）或一台 ARM64 Kaihong 机器；
-2. 用官方 ArkTS 插件新建 API 14 空工程，确认 HAP 能构建/安装；
+1. 等此前磁盘恢复，确认 DevEco 里的 Kaihong Public SDK（API 11/14）可用；
+2. 用 DevEco 新建 API 14 空工程，确认 HAP 能构建/签名；
 3. 把 DHB HAP 降到 API 14 profile，先只验证 `INTERNET` + TCP；
-4. 再验证 `DISTRIBUTED_DATASYNC` 权限；
-5. 最后才谈 dsoftbus/HiChain 和 Gate B4。
+4. 有 Kaihong 设备时 `hdc install`，再验证 `DISTRIBUTED_DATASYNC`；
+5. 最后才谈 dsoftbus/HiChain 和 Gate B4；x86 尝鲜版另行评估。
 
 ## 7. 参考
 
