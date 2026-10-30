@@ -6,10 +6,11 @@
 
 ## 0. 一句话结论
 
-**KaihongOS 桌面版 5.0.1 的官方北向开发路径不是 DevEco 单干，而是
-VS Code + ArkTS Project Manager + ARM64 Linux 容器 + `kaihongos-devkit`；
-默认 SDK 是 API 11/API 14。当前 DHB HAP 的 `targetSdkVersion 20` /
-`runtimeOS: HarmonyOS` 不能当作 KaihongOS 5.0.1 的构建配置。**
+**KaihongOS 桌面版 5.0.1 有两条官方北向路径：DevEco Studio + Kaihong Public SDK
+（主路线，SDK 已有），以及 VS Code + ArkTS Project Manager + ARM64 Linux 容器 +
+`kaihongos-devkit`。默认 SDK 是 API 11/API 14。当前 DHB HAP 的
+`targetSdkVersion 20` / `runtimeOS: HarmonyOS` 不是 Kaihong 的官方 profile，
+但 HAP 是标准安装单位，仍应先尝试安装，失败再切 API14 profile。**
 
 ## 1. 资料分层
 
@@ -93,11 +94,13 @@ targetSdkVersion: "6.0.0(20)"
 runtimeOS: "HarmonyOS"
 ```
 
-它面向华为 HarmonyOS 5/6，不是 KaihongOS 5.0.1（API 11/14）。
-**不能把现在的 unsigned HAP 直接说成“KaihongOS 可安装”。**
+它面向华为 HarmonyOS 5/6，不是 KaihongOS 5.0.1（API 11/14）的官方 profile。
+但 `compatibleSdkVersion=12` 低于 API14，manifest 上并非必然被拒；
+**先实测安装，不能凭 target 20 断定“不能装”，也不能凭 manifest 断定“已兼容”。**
 
-### 4.2 需要单独的 Kaihong 5.0.1 构建 profile
+### 4.2 如果标准 HAP 装不上，再切 Kaihong profile
 
+标准 HAP 先试；只有安装/运行失败，才需要单独的 Kaihong 5.0.1 profile。
 候选片段（**未在 Kaihong SDK 上验证**，只是把差异写清楚）：
 
 ```json5
@@ -158,7 +161,8 @@ runtimeOS: "HarmonyOS"
 现在更准确的顺序是：
 
 ```text
-B1  KaihongOS 5.0.1（API 14）HAP 构建/签名/安装/启动
+B0  KaihongOS 5.0.1 先尝试安装当前标准 HAP（不先重编 API14）
+B1  若装不上，再用 API14 profile 构建/签名/安装/启动
 B2  HAP 标准 TCP + 文件/剪贴板（DHB 自有协议）
 B3  KaihongOS 的 dsoftbus/device_auth 版本确认
 B4  OH 6.0 ↔ KaihongOS 对应版本 的认证/session
@@ -168,10 +172,10 @@ B1/B2 之前，不应该先承诺 B3/B4。
 
 ## 6. 待办
 
-1. 等此前磁盘恢复，确认 DevEco 里的 Kaihong Public SDK（API 11/14）可用；
-2. 用 DevEco 新建 API 14 空工程，确认 HAP 能构建/签名；
-3. 把 DHB HAP 降到 API 14 profile，先只验证 `INTERNET` + TCP；
-4. 有 Kaihong 设备时 `hdc install`，再验证 `DISTRIBUTED_DATASYNC`；
+1. 先用当前标准 HAP 尝试 `hdc install`（有设备时），不要先重编；
+2. 若装不上/启动失败，再恢复旧盘 Kaihong SDK，用 API14 profile 重编；
+3. 用 DevEco 新建 API 14 空工程做对照，确认 Hvigor/签名的差异；
+4. 先只验证 `INTERNET` + TCP，再验证 `DISTRIBUTED_DATASYNC`；
 5. 最后才谈 dsoftbus/HiChain 和 Gate B4；x86 尝鲜版另行评估。
 
 ## 7. 参考

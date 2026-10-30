@@ -181,6 +181,7 @@ packaging/           deb / systemd 骨架（M1）
 - [SKILL 研读：OH/KaihongOS 优先](docs/16-skill-study-openharmony-kaihong.md)
 - [平台边界矩阵（华为鸿蒙 / 纯血鸿蒙 PC / HarmonyOS Connect / KaihongOS / OHOS / 国产 Linux）](docs/17-platform-taxonomy.md)
 - [KaihongOS 桌面版 5.0.1 资料结论（ARM64 devkit / API 11/14 / Gate B）](docs/18-kaihongos-desktop-5.0.1-notes.md)
+- [HAP 可移植性（先按标准 APK 开发，厂商 profile 后置）](docs/19-hap-portability.md)
 - [GCL / 控制面（外部 Agent 入口）](CONTROL-PLANE.md)
 - [外部 Agent 交接提示词](HANDOFF-PROMPT.md)
 - [变更记录](CHANGELOG.md)

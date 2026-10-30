@@ -22,6 +22,7 @@
 18. [GCL / 控制面](../CONTROL-PLANE.md) — 外部 Agent 的唯一入口、绝对路径、任务队列。
 19. [外部 Agent 提示词](../HANDOFF-PROMPT.md) — 可直接粘贴的交接提示词。
 20. [KaihongOS 桌面版 5.0.1 资料结论](18-kaihongos-desktop-5.0.1-notes.md) — VS Code/ARM64 devkit、API 11/14、HAP 签名与 Gate B 顺序。
+21. [HAP 可移植性](19-hap-portability.md) — 先按标准 HAP/APK 开发，厂商 profile 后置。
 
 架构决策：
 

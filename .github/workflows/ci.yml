@@ -17,6 +17,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Validate HarmonyOS skeleton
         run: python3 scripts/check-ohos-config.py
+      - name: Validate HAP portability boundary
+        run: python3 scripts/check-ohos-portability.py
       - name: Validate Deepin D-Bus contract
         run: python3 scripts/check-deepin-contract.py
       - name: Configure

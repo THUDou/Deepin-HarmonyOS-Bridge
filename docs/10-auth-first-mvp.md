@@ -46,11 +46,12 @@
 > 官方 SDK 是 API 11/14，不是 target 20；可用 DevEco + Kaihong Public SDK，
 > 或 VS Code + ARM64 devkit。详见 [KaihongOS 资料结论](18-kaihongos-desktop-5.0.1-notes.md)。
 
-- B0.1：API 14 HAP 构建 + OpenHarmony 签名 + `hdc install`。
+- B0.1：先尝试安装当前标准 HAP；失败再切 API14 profile 构建/签名/安装。
 - B0.2：标准 TCP 文件/剪贴板（DHB 自有协议）通过。
 - B0.3：确认 KaihongOS 的 dsoftbus/device_auth 版本，再决定 5.x 还是 6.x helper。
 - 通过标准：应用启动、能连 Deepin `dhb serve`、文件真实到达；不要求软总线。
-- 注意：当前 HAP 是 `runtimeOS: HarmonyOS` / target 20，不能直接算 B0。
+- 注意：当前 HAP 是 `runtimeOS: HarmonyOS` / target 20，manifest 上未必要先重编；
+  **先装再判断**，不要因为厂商文档不同就停掉标准 HAP 开发。
 
 ### Gate B · Modern 6.x
 

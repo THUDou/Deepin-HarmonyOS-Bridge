@@ -18,9 +18,10 @@ All notable changes to DHB are documented here. The project follows
 
 ### Docs
 
-- KaihongOS Desktop 5.0.1 notes: VS Code + ARM64 devkit + API 11/14;
-  candidate API 14 HAP profile; Gate B0 added.
+- KaihongOS Desktop 5.0.1 notes: DevEco + Kaihong SDK / VS Code + ARM64 devkit;
+  API 11/14; candidate API 14 HAP profile; Gate B0 added.
 - Clarified that KaihongOS Meta 6.1 platform docs are not a desktop SDK.
+- HAP portability note: standard HAP first, vendor profile only if install fails.
 
 ### Verified
 

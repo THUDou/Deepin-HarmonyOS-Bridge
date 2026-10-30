@@ -3,7 +3,7 @@
 > **This is the full tracked source snapshot, not a release.**
 > HAP is unsigned; Gate A/B are not passed; no device runtime is claimed.
 
-- Source commit: `8808588` (`docs: clarify Kaihong DevEco and VS Code routes`)
+- Source commit: `f61032d` (`feat: keep HAP vendor-neutral and guard portability`)
 - Repository: `https://github.com/THUDou/Deepin-HarmonyOS-Bridge`
 - Visibility: public
 - Snapshot date: 2026-10-30

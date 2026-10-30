@@ -69,10 +69,10 @@
 
 ### H2（需 DevEco/hvigor + OH/Kaihong 设备）
 HAP 兼容性收口：只使用标准 ArkTS/ArkUI，不引入华为 Kit；在 OpenHarmony/KaihongOS 上验证安装/启动；把结果写 `docs/08`。
-**KaihongOS 5.0.1 的 SDK 是 API 11/14，不是 target 20**；可用 DevEco +
-Kaihong Public SDK，或 VS Code + ARM64 devkit。先按 `docs/18` 和
-`ohos/profiles/kaihong-5.0.1.build-profile.json5` 做 API 14 HAP，不要拿默认
-HarmonyOS profile 冒充 Kaihong。**不要**用华为 AGC 证书冒充 KaihongOS 系统签名。
+**先试装标准 HAP**；KaihongOS 5.0.1 的 SDK 是 API 11/14，装不上再切 API14
+profile。可用 DevEco + Kaihong Public SDK，或 VS Code + ARM64 devkit。不要因为
+厂商文档不同就停掉标准 HAP 开发，也不要拿默认 HarmonyOS profile 冒充已验证 Kaihong。
+**不要**用华为 AGC 证书冒充 KaihongOS 系统签名。
 
 ### H3（需 Linux + Docker/KLink 源码）
 补 KLink lab 的 `GetAllNodeDeviceInfo` / `OpenSession` / 字节通道验证；基于 `docs/12` 与 `scripts/klink-lab-*`。
