@@ -117,8 +117,8 @@ dhb-daemon（现有 C++ 核心）
 
 - `devecocli` 实际 build/run：未执行（DevEco/环境不可用）。
 - `harmonyos-agent-skills` 专项技能：仅研读路由与边界，未执行 115 个子技能。
-- DTK6 tray/GUI：未编译（WSL `LxssManager` 卡住）。
-- Linyaps `ll-builder`：未构建（WSL/Deepin25 不可用）。
+- DTK6 tray/GUI：**工具链已装**（Deepin 25 WSL：DTK6 6.7.47.1 / Qt6 6.8.0 / `dde-tray-loader-dev`），但代码未写、未编译。
+- Linyaps `ll-builder`：**1.14.3 已装**，尚未执行 `ll-builder build`；WSL 内 `linglong` PackageManager 的 D-Bus 激活失败需单独处理。
 - KaihongOS/OH 真机：无设备。
 
 这些是环境前置，不是代码结论。

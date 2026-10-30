@@ -194,13 +194,22 @@ ctest --test-dir build --output-on-failure
 - `dhb selftest` 通过；
 - 环境：Deepin 25 / g++ 12.3.0 / CMake 3.31.4；
 - WSL 的 Windows PATH 含已失效的 `G:\DevEco...`，会打印 `Failed to translate` 警告并让 shell 返回 1，但构建/测试本身成功；这不是 Deepin 构建失败；
-- 未安装 DTK6、`ll-builder`，所以 tray/GUI/Linyaps 仍未编译。
+- 已从 Deepin 官方源安装开发工具：
+  - `libdtk6widget-dev` / `libdtk6core-dev` **6.7.47.1**
+  - Qt6 **6.8.0**
+  - `dde-tray-loader-dev`（`PluginsItemInterfaceV2` 头文件）
+  - `linglong-builder` **1.14.3** / `linglong-bin`
+- `pkg-config --modversion dtk6widget` → `6.7.47`；`ll-builder --version` → `1.14.3`；
+- 安装时 `linglong` 的 PackageManager D-Bus 激活失败（WSL 没有完整 systemd/D-Bus），但 `ll-builder` 二进制可用；尚未执行 `ll-builder build`；
+- **DTK6 tray/GUI 和 Linyaps 包仍未编译**，只完成了工具链安装。
 
 ## 3. 还没有证明
 
 | 项 | 状态 | 下一步 |
 |---|---|---|
 | Deepin 25 WSL：CMake + ctest + selftest | ✅ | `wsl -d deepin25` |
+| Deepin 25 WSL：DTK6/Qt6/tray 头文件 | ✅ 6.7.47.1 / Qt6 6.8.0 | 可开始编译 tray |
+| Deepin 25 WSL：`ll-builder` | ✅ 1.14.3（CLI） | 未执行 build |
 | Deepin/UOS **实机** CMake + `dev-loopback.sh` | ❌ | 在真实 Deepin/UOS 硬件上跑 |
 | Ubuntu 22.04 容器：CMake + ctest + TCP/UDP | ✅ | `build-linux` + `dev-loopback.sh` |
 | KLink 4.x Linux host build（Ubuntu 容器） | ✅ | `scripts/build-klink-lab.sh` |
@@ -211,6 +220,8 @@ ctest --test-dir build --output-on-failure
 | OpenHarmony 6.0 ↔ KaihongOS 6.x 认证/session | ❌ | Gate B（docs/10） |
 | Linux 内核/PipeWire/uinput | ❌ | M0 的 Deepin 侧 demo |
 | HarmonyOS HAP 编译（DevEco 26 / SDK 26） | ✅ unsigned | 产物已生成 |
+| DTK6 tray / dhb-gui | ❌ | 工具链已装，代码未写/未编译 |
+| Linyaps 包 `dhb` | ❌ | `ll-builder` 已装，未 build |
 | HAP 真机签名/安装/运行 | ❌ | 配置签名 + 连接真机/模拟器 |
 | 屏幕协同（采集/编码/解码/回控） | ❌（仅设计） | M2 |
 | 性能（1080p30、CPU、文件吞吐） | ❌ | M2 基准 |
@@ -218,7 +229,7 @@ ctest --test-dir build --output-on-failure
 
 ## 4. 结论
 
-**核心协议、认证、文件引擎、发现、TCP 双向传输已经在 Windows/MSYS2、Ubuntu 22.04 容器与 Deepin 25 WSL 跑通；KLink 4.x host 栈已编译并完成两容器 COAP 发现 + CLOUD_SN lab 认证；HarmonyOS HAP 已用 DevEco 26 编译通过（unsigned）。仍缺：生产 PIN 认证、OHOS/KaihongOS 真机、HAP 安装运行、Deepin/UOS 实机、DTK6 tray/GUI、Linyaps。**
+**核心协议、认证、文件引擎、发现、TCP 双向传输已经在 Windows/MSYS2、Ubuntu 22.04 容器与 Deepin 25 WSL 跑通；KLink 4.x host 栈已编译并完成两容器 COAP 发现 + CLOUD_SN lab 认证；HarmonyOS HAP 已用 DevEco 26 编译通过（unsigned）。Deepin 25 WSL 已装 DTK6 6.7.47.1/Qt6 6.8.0/`ll-builder` 1.14.3，但 tray/GUI/Linyaps 尚未编译。仍缺：生产 PIN 认证、OHOS/KaihongOS 真机、HAP 安装运行、Deepin/UOS 实机。**
 
 因此当前状态是：
 
