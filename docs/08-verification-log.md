@@ -1,7 +1,7 @@
 # DHB 验证记录
 
 > 目的：记录“哪些已经证明、哪些还没有”，避免把设计当现实。
-> 最近更新：2026-10-27
+> 最近更新：2026-10-30
 
 ## 1. 环境
 
@@ -12,7 +12,8 @@
 | 构建 B | MSYS2 POSIX g++ 16.2.0（`x86_64-pc-msys`，用于验证 POSIX 分支） |
 | HarmonyOS | DevEco Studio **26.0.0.851** + SDK **26.0.0.105**；HAP 编译通过（unsigned）；无真机连接 |
 | Linux 容器 | Ubuntu 22.04 / g++ 11.4 / CMake 3.22（Docker Desktop，Linux 6.6 WSL2 内核）；**构建/测试/传输/发现已跑通** |
-| Linux 真机 | **未执行**（Deepin 25/UOS 实机、内核/PipeWire/uinput 未验） |
+| Deepin 25 WSL | **Deepin 25 (crimson)**，g++ 12.3.0 / CMake 3.31.4；**构建 + ctest + selftest 已通过** |
+| Linux 真机 | **未执行**（Deepin/UOS 实机、内核/PipeWire/uinput 未验） |
 | KLink / KaihongOS | KLink 4.x host build + 两容器 COAP 发现已验证；**KaihongOS/OH 真机未执行** |
 | 版本基线 | KLink 4.x（最新提交 2025-08-01）；OpenHarmony 6.0-Release（2025-09-10）；openEuler 公开包 3.2 |
 
@@ -173,11 +174,34 @@ scripts/build-klink-lab.sh
 - **PIN 路径未通过**：A 发起 `AuthenticateDevice(PIN)` 返回 0；B 显示 `Auth PinCode:[398754]`；A 随后 `OnAuthResult status: 5 reason: -20006`（`ERR_DEV_CENTER_INPUT_PARA_INVALID`）。判断是 Linux CLI 的 PIN/UI 状态机未走到 `OnInputAuthInfo`。
 - **CLOUD_SN lab 路径通过**：A `AuthenticateDevice(type 0)`，B `OnCheckDeviceSNVaild` 放行，A `OnAuthResult status: 7 reason: 0`（`AUTH_REQUEST_FINISH`），双方 `OnSoftbusDeviceFound isOnline: 1` 并拿到 `networkId`。这只是 lab 放行，不是生产策略，也不等于 Gate A。详见 [KLink Linux lab](12-klink-linux-lab.md)。
 
+### 2.9 Deepin 25 WSL（真实 Deepin 发行版）
+
+```bash
+wsl -d deepin25 -u root
+# 只复制源码，不带 build/、third_party/
+cp -a /mnt/c/Deepin-HarmonyOS-Bridge/{include,src,apps,tests,CMakeLists.txt} /root/dhb/
+cd /root/dhb
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j4
+ctest --test-dir build --output-on-failure
+./build/dhb selftest
+```
+
+结果：
+
+- `CMAKE_RC=0`，`BUILD_RC=0`；
+- `ctest` **1/1 passed**；
+- `dhb selftest` 通过；
+- 环境：Deepin 25 / g++ 12.3.0 / CMake 3.31.4；
+- WSL 的 Windows PATH 含已失效的 `G:\DevEco...`，会打印 `Failed to translate` 警告并让 shell 返回 1，但构建/测试本身成功；这不是 Deepin 构建失败；
+- 未安装 DTK6、`ll-builder`，所以 tray/GUI/Linyaps 仍未编译。
+
 ## 3. 还没有证明
 
 | 项 | 状态 | 下一步 |
 |---|---|---|
-| Deepin 25 / UOS 实机 CMake + `scripts/dev-loopback.sh` | ❌ | 在真实 Deepin/UOS 上跑 |
+| Deepin 25 WSL：CMake + ctest + selftest | ✅ | `wsl -d deepin25` |
+| Deepin/UOS **实机** CMake + `dev-loopback.sh` | ❌ | 在真实 Deepin/UOS 硬件上跑 |
 | Ubuntu 22.04 容器：CMake + ctest + TCP/UDP | ✅ | `build-linux` + `dev-loopback.sh` |
 | KLink 4.x Linux host build（Ubuntu 容器） | ✅ | `scripts/build-klink-lab.sh` |
 | KLink 4.x Linux ↔ Linux COAP 发现 | ✅ | 两容器，`unAuth` 设备可见 |
@@ -194,7 +218,7 @@ scripts/build-klink-lab.sh
 
 ## 4. 结论
 
-**核心协议、认证、文件引擎、发现、TCP 双向传输已经在 Windows/MSYS2 与 Ubuntu 22.04 容器跑通；KLink 4.x host 栈已编译并完成两容器 COAP 发现 + CLOUD_SN lab 认证；HarmonyOS HAP 已用 DevEco 26 编译通过（unsigned）。仍缺：生产 PIN 认证、OHOS/KaihongOS 真机、HAP 安装运行、Deepin 25 实机。**
+**核心协议、认证、文件引擎、发现、TCP 双向传输已经在 Windows/MSYS2、Ubuntu 22.04 容器与 Deepin 25 WSL 跑通；KLink 4.x host 栈已编译并完成两容器 COAP 发现 + CLOUD_SN lab 认证；HarmonyOS HAP 已用 DevEco 26 编译通过（unsigned）。仍缺：生产 PIN 认证、OHOS/KaihongOS 真机、HAP 安装运行、Deepin/UOS 实机、DTK6 tray/GUI、Linyaps。**
 
 因此当前状态是：
 

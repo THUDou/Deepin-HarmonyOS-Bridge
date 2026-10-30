@@ -3,7 +3,7 @@
 > **This is the full tracked source snapshot, not a release.**
 > HAP is unsigned; Gate A/B are not passed; no device runtime is claimed.
 
-- Source commit: `d2ac0be` (`docs: separate Huawei HarmonyOS, KaihongOS and OpenHarmony`)
+- Source commit: `b52c880` (`docs: add GCL control plane and external handoff`)
 - Repository: `https://github.com/THUDou/Deepin-HarmonyOS-Bridge`
 - Visibility: public
 - Snapshot date: 2026-10-30

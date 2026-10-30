@@ -19,6 +19,8 @@
 15. [Deepin 25 客户端计划](../deepin/README.md) — DTK6/DDE tray/D-Bus/Linyaps 的分阶段设计。
 16. [SKILL 研读：OH/KaihongOS 优先](16-skill-study-openharmony-kaihong.md) — deveco-cli/harmonyos-agent-skills 的边界，DTK/DDE/Linyaps 取舍。
 17. [平台边界矩阵](17-platform-taxonomy.md) — 华为鸿蒙 4.x / 纯血鸿蒙 PC / HarmonyOS Connect / KaihongOS / OHOS / 国产 Linux。
+18. [GCL / 控制面](../CONTROL-PLANE.md) — 外部 Agent 的唯一入口、绝对路径、任务队列。
+19. [外部 Agent 提示词](../HANDOFF-PROMPT.md) — 可直接粘贴的交接提示词。
 
 架构决策：
 
