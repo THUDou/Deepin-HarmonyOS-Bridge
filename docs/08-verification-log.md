@@ -236,6 +236,15 @@ cmake --build build -j4
   - 不带 `--skip-run-container` 时，`Runtime Check` 在 WSL 嵌套容器里报
     `remount failed after all fallbacks`，所以 **运行验证未通过**；这只是 WSL 容器限制，不能写成 Linyaps 已运行。
 
+### 2.11 HAP 可移植性收口（静态改动，未重编）
+
+- `hello.caps` 只声明 `FILE | CLIPBOARD`，不再虚报 `SCREEN_SINK | INPUT`；
+- 接收续传的 part 文件改为 `.dhb-<sha256>.part`，与 Linux 核心一致，
+  不再用 transfer id；
+- UI 副标题改为 `HarmonyOS / OpenHarmony`。
+- 2026-10-30 无 DevEco 环境，**上述 HAP 改动未重新编译**；
+  `scripts/check-ohos-portability.py` 已通过静态边界检查。
+
 ## 3. 还没有证明
 
 | 项 | 状态 | 下一步 |
@@ -254,9 +263,9 @@ cmake --build build -j4
 | KLink 4.x Linux↔Linux CLOUD_SN lab 认证 | ✅ | `status 7 / reason 0`，双方有 `networkId` |
 | KLink 4.x ↔ OH 4.x/HarmonyOS 4.x 发现/PIN/可信列表 | ❌ | Gate A（docs/10） |
 | OpenHarmony 6.0 ↔ KaihongOS 6.x 认证/session | ❌ | Gate B（docs/10） |
-| KaihongOS 5.0.1（API 14）HAP 构建/签名/安装 | ❌ | 需 ARM64 devkit/VS Code；见 docs/18 |
+| KaihongOS 5.0.1：标准 HAP 先试装 | ❌ | 有设备先装当前 HAP；失败再切 API14。见 docs/18 |
 | Linux 内核/PipeWire/uinput | ❌ | M0 的 Deepin 侧 demo |
-| HarmonyOS HAP 编译（DevEco 26 / SDK 26） | ✅ unsigned | 产物已生成 |
+| HarmonyOS HAP 编译（DevEco 26 / SDK 26） | ✅ 上次 unsigned | 2026-10-30 改动后未重编 |
 | DTK6 tray 完整 DDE 面板 | ❌ | 只验证了插件加载，无 DDE 会话 |
 | `dhb-gui` | ❌ | 未写/未编译 |
 | Linyaps `dhb` 运行 | ❌ | WSL 容器 remount 失败 |

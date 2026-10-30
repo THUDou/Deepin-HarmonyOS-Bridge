@@ -106,8 +106,10 @@ export class BridgeClient {
 
     this.localNonce = this.randomBytes(16);
     const hello = new P.HelloMessage();
-    hello.caps = P.Capability.FILE | P.Capability.CLIPBOARD |
-      P.Capability.SCREEN_SINK | P.Capability.INPUT;
+    // Advertise only what this HAP actually implements. Screen/input are
+    // roadmap items; claiming them here would make the peer send frames we
+    // cannot consume.
+    hello.caps = P.Capability.FILE | P.Capability.CLIPBOARD;
     hello.nonce = this.localNonce;
     hello.deviceId = this.localId;
     hello.deviceName = this.localName;
@@ -332,7 +334,9 @@ export class BridgeClient {
       return;
     }
 
-    const partPath = this.receivedDir + '/.dhb-' + offer.id + '.part';
+    // Resume is keyed by content hash, not transfer id. A retry with a new id
+    // must still find the same partial file (same rule as the Linux core).
+    const partPath = this.receivedDir + '/.dhb-' + P.bytesToHex(offer.sha256) + '.part';
     const finalPath = this.uniquePath(this.receivedDir, safeName);
     let offset = 0;
     try {

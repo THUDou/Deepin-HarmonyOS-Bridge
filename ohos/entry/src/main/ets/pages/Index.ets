@@ -146,7 +146,7 @@ struct Index {
             .fontSize(28)
             .fontWeight(FontWeight.Bold)
             .fontColor('#E6F1FF')
-          Text('深鸿桥 · Deepin ↔ HarmonyOS')
+          Text('深鸿桥 · Deepin ↔ HarmonyOS / OpenHarmony')
             .fontSize(12)
             .fontColor('#7A8CA3')
         }

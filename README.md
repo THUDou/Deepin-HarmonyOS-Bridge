@@ -22,7 +22,7 @@ DHB 是一个开源的跨端协同桥：Linux 侧是原生 C++17 CLI/daemon，�
 | **文本剪贴板** | ✅ 协议与客户端代码完成 | HAP UI 已接，真机权限/行为待验证 |
 | **Linux CLI** | ✅ 可用 | `serve` / `send` / `pair` / `recv` / `discover` / `doctor` / `selftest` |
 | **Deepin 桌面 MVP** | 🧪 实验可用 | `dhb-daemon` D-Bus + Pair/SendFile、DTK6 tray 插件加载、`dhb` CLI Linyaps build/export；无完整 DDE 面板，Linyaps runtime 未验 |
-| **HarmonyOS HAP** | ✅ 编译通过（unsigned） | DevEco 26 / SDK 26；`runtimeOS: HarmonyOS`，不是 Kaihong 5.0.1 profile；未签名、未安装 |
+| **HarmonyOS HAP** | ✅ 上次编译通过（unsigned） | DevEco 26 / SDK 26；2026-10-30 caps/续传改动后未重编；`runtimeOS: HarmonyOS`，不是 Kaihong profile；未签名、未安装 |
 | **KLink 4.x lab** | 🧪 实验可用 | Linux host build、双容器 COAP 发现、CLOUD_SN lab 认证 |
 | **dsoftbus 6.x** | 📐 研究中 | 差异报告与 rebase 计划完成；Linux host build 未开始 |
 | **TLS 1.3** | 🚧 未实现 | 当前 TCP 明文，仅限开发/可信局域网 |

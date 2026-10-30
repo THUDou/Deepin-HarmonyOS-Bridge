@@ -61,7 +61,8 @@ API 14 在数字上不低于它。但 `targetSdkVersion=20`、`runtimeOS`、`@ki
 - `@kit.*` 别名在 Kaihong/OH SDK 中是否齐全；
 - `targetSdkVersion 20` 是否被 API14 设备接受；
 - `runtimeOS: HarmonyOS` 是否影响签名/安装；
-- `DISTRIBUTED_DATASYNC` 的授权行为；
+- HAP 已只声明 `FILE | CLIPBOARD`，不再虚报 screen/input；
+- 接收续传 part 名已改为 `.dhb-<sha256>.part`；
 - `2in1`/`tablet` deviceTypes 是否被 Kaihong 桌面识别；
 - HAP 签名链是否必须换成 Kaihong/OpenHarmony 证书。
 
