@@ -5,10 +5,14 @@
 DHB 是一个开源的跨端协同桥：Linux 侧是原生 C++17 CLI/daemon，鸿蒙侧是 ArkTS/HAP。
 它不依赖 ADB、不要求开发者模式，也不把“兼容鸿蒙”做成一句口号——**同一套 DHB 协议，今天跑 TCP，明天可以跑 dsoftbus；软总线走不通时，自己的协议仍然能工作。**
 
-> **状态：`v0.1.0-alpha`，未完成。**
-> 文件/剪贴板/发现/PSK 认证/双端骨架已跑通；HAP 已编译但未签名、未真机运行；
+> **状态：`v0.1.0-alpha.2`，未完成。**
+> 文件/剪贴板/发现/PSK 认证/双端骨架已跑通；HAP 已签名、安装并在
+> **KaihongOS 6.1.1.11（API 23，x86_64）** 启动；Linux↔Kaihong HAP 的 TCP/PSK
+> 认证已通过，文件实传仍待验证；
 > KLink 4.x 已做到 Linux host build + 双容器 COAP 发现 + CLOUD_SN lab 认证；
 > **Gate A（KLink ↔ OH 4.x）和 Gate B（OH 6.0 ↔ KaihongOS 6.x）尚未通过。**
+>
+> Release: <https://github.com/THUDou/Deepin-HarmonyOS-Bridge/releases/tag/v0.1.0-alpha.2>
 
 ---
 

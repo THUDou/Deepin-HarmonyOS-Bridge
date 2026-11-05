@@ -3,6 +3,21 @@
 All notable changes to DHB are documented here. The project follows
 [Semantic Versioning](https://semver.org/) once it reaches a stable release.
 
+## v0.1.0-alpha.2 — 2026-11-06
+
+### Added
+
+- GitHub prerelease assets: signed and unsigned Kaihong x86_64 HAP + `SHA256SUMS`.
+- HAP installed and launched on KaihongOS 6.1.1.11 (API 23, x86_64_system).
+- Linux (Deepin 25 WSL) ↔ Kaihong HAP TCP + PSK authentication verified.
+- HAP signed with the SDK OpenHarmony test profile; not a production certificate.
+
+### Not verified
+
+- File transfer on the Kaihong HAP session.
+- Huawei HarmonyOS devices.
+- KLink/dsoftbus 4.x/6.x real-device authentication.
+
 ## Unreleased
 
 ### Added

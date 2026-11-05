@@ -304,6 +304,19 @@ authenticated with LAPTOP-AACOP06S
 - 尚未完成：文件实际传输/接收（server 的 send-on-connect 测试文件路径曾失败，
   未重跑到成功），以及剪贴板读取、软总线、Gate A/B。
 
+### 2.14 GitHub prerelease `v0.1.0-alpha.2`
+
+- Release: <https://github.com/THUDou/Deepin-HarmonyOS-Bridge/releases/tag/v0.1.0-alpha.2>
+- Source snapshot: `9a7444c`（完整 tracked source 已同步）
+- Assets:
+  - `dhb-0.1.0-kaihong-x86_64-signed.hap` — 246634 bytes，
+    SHA-256 `e4e8b6a4...a6f8b9`
+  - `dhb-0.1.0-kaihong-x86_64-unsigned.hap` — 209329 bytes，
+    SHA-256 `6acceab3...b377b8b`
+  - `SHA256SUMS`
+- 签名使用 SDK 中的 **OpenHarmony test certificate**，不是生产证书。
+- Release 说明明确标注：文件实传、华为真机、KLink/dsoftbus 未验证。
+
 ## 3. 还没有证明
 
 | 项 | 状态 | 下一步 |
