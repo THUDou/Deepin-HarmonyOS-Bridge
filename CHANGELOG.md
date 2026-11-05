@@ -23,13 +23,21 @@ All notable changes to DHB are documented here. The project follows
 - Clarified that KaihongOS Meta 6.1 platform docs are not a desktop SDK.
 - HAP portability note: standard HAP first, vendor profile only if install fails.
 - HAP caps no longer claim screen/input before implementation; receive resume
-  part name aligned to `.dhb-<sha256>.part`. HAP was not rebuilt in this round.
+  part name aligned to `.dhb-<sha256>.part`.
+  Rebuilt 2026-11-05 with hvigor 6.26.9 / SDK 26.0.0.38 (unsigned, 209487 bytes).
+- HAP signed with an OpenHarmony test profile and installed/launched on
+  KaihongOS 6.1.1.11 (API 23, x86_64) via hdc `192.168.128.10:10178`.
+  `READ_PASTEBOARD` was rejected by the device and removed from the manifest.
 
 ### Verified
 
 - Deepin 25 WSL: CMake build, `ctest` 1/1, `dhb selftest`.
 - D-Bus `Pair`/`SendFile`: 22-byte payload byte-identical on the server.
 - Tray plugin loader log: `Loaded plugin: "dhb-tray"`.
+- Kaihong HAP: `install bundle successfully`, `start ability successfully`.
+- Linux↔Kaihong: HAP authenticated to Deepin WSL `dhb serve` through a
+  Windows TCP proxy (`peer: LAPTOP-AACOP06S (Deepin/UOS Linux)`).
+- File transfer on that HAP session is **not** yet verified.
 
 ## v0.1.0-alpha — 2026-10-28
 

@@ -11,6 +11,8 @@
 | 构建 A | CMake 3.29 + Ninja + MinGW g++ 16.1（Windows 目标） |
 | 构建 B | MSYS2 POSIX g++ 16.2.0（`x86_64-pc-msys`，用于验证 POSIX 分支） |
 | HarmonyOS | DevEco Studio **26.0.0.851** + SDK **26.0.0.105**；HAP 编译通过（unsigned）；无真机连接 |
+| G 盘工具 | `G:\DevEco Studios\command-line-tools`：hvigor **6.26.9**、SDK **26.0.0.38**；`G:\DHB-Lab` 为唯一新增工作目录 |
+| VM | VMware Workstation 17.5.2：Deepin-25.2.0（192.168.128.11）与 KaihongOS-6.1（192.168.128.10）在跑；Kaihong 的 hdc/SSH/guest ops 未连通 |
 | Linux 容器 | Ubuntu 22.04 / g++ 11.4 / CMake 3.22（Docker Desktop，Linux 6.6 WSL2 内核）；**构建/测试/传输/发现已跑通** |
 | Deepin 25 WSL | **Deepin 25 (crimson)**，g++ 12.3.0 / CMake 3.31.4；**构建 + ctest + selftest 已通过** |
 | Linux 真机 | **未执行**（Deepin/UOS 实机、内核/PipeWire/uinput 未验） |
@@ -236,14 +238,71 @@ cmake --build build -j4
   - 不带 `--skip-run-container` 时，`Runtime Check` 在 WSL 嵌套容器里报
     `remount failed after all fallbacks`，所以 **运行验证未通过**；这只是 WSL 容器限制，不能写成 Linyaps 已运行。
 
-### 2.11 HAP 可移植性收口（静态改动，未重编）
+### 2.11 HAP 可移植性收口（2026-11-05 已重编）
 
 - `hello.caps` 只声明 `FILE | CLIPBOARD`，不再虚报 `SCREEN_SINK | INPUT`；
 - 接收续传的 part 文件改为 `.dhb-<sha256>.part`，与 Linux 核心一致，
   不再用 transfer id；
-- UI 副标题改为 `HarmonyOS / OpenHarmony`。
-- 2026-10-30 无 DevEco 环境，**上述 HAP 改动未重新编译**；
-  `scripts/check-ohos-portability.py` 已通过静态边界检查。
+- UI 副标题改为 `HarmonyOS / OpenHarmony`；
+- 增加 `ohos.permission.READ_PASTEBOARD` 声明（编译器仍会打印静态提示，
+  但 manifest 已声明）。
+- 在 G 盘 DevEco 命令行工具上重编：
+  - hvigor **6.26.9**；
+  - SDK **26.0.0.38**（`G:\DevEcoStudioData\AppData\Local\OpenHarmony\Sdk\26.0.0`）；
+  - `assembleHap` → **BUILD SUCCESSFUL**（unsigned）；
+  - 产物 `entry-default-unsigned.hap`，**209487 bytes**，
+    SHA-256 `AE18B69A...FCBB87`。
+- HAP 已用 OpenHarmony 测试证书签名，并在 KaihongOS 6.1.1.11 上安装、启动成功；
+  详见 2.13。这里不再把“编译成功”和“已安装”混为一谈。
+
+### 2.12 G 盘 / VM 操作记录
+
+- 只在 G 盘新建了一个工作目录：`G:\DHB-Lab`（含 `logs`、`artifacts`）；
+  没有改动 `G:\DevEco Studios` 等现有工具目录。
+- 找到的工具：
+  - `G:\DevEco Studios\command-line-tools\bin\hvigorw.bat` — hvigor **6.26.9**；
+  - `G:\DevEco Studios\command-line-tools\sdk\default\openharmony` — API **26**；
+  - `G:\DevEcoStudioData\AppData\Local\OpenHarmony\Sdk\26.0.0` — SDK **26.0.0.38**；
+  - `G:\DevEco Studios\arm64-packages\kaihongos-devkit` — Kaihong devkit deb；
+  - `G:\DevEco Studios\command-line-tools\...\toolchains\hdc.exe`。
+- VM：
+  - Deepin-25.2.0：`192.168.128.11`，已抓快照 `DHB-before-work-20261105`；
+  - KaihongOS-6.1：`192.168.128.10`，已有 `KaihongOS快照`，并补抓
+    `DHB-before-work-20261105`；
+  - `vmrun list` 确认两台都在运行。
+- hdc 实际端口是 **10178**（不是 8710）：宿主
+  `hdc tconn 192.168.128.10:10178` → `Connect OK`，
+  `hdc list targets` 显示该设备。
+- 设备信息：`KaihongOS 6.1.1.11`，API **23**，`x86_64_system`。
+- HAP 签名/安装：
+  - 使用 SDK 自带 `OpenHarmony.p12` + `OpenHarmonyProfileRelease.pem`；
+  - 生成 `G:\DHB-Lab\signing\dhb-profile.p7b`、`app-release-chain.pem`；
+  - `hap-sign-tool.jar sign-app` → `entry-default-signed.hap`（246634 bytes）；
+  - `hdc install` → **install bundle successfully**；
+  - `aa start -a EntryAbility -b org.dhb.bridge` → **start ability successfully**；
+  - DHB UI 已在 Kaihong 桌面显示。
+- 注意：`READ_PASTEBOARD` 在 Kaihong 上被拒绝导致安装失败，已从 manifest 移除；
+  因此 **发送剪贴板读取能力未验证**，文件传输不受影响。
+- HAP 副本：`G:\DHB-Lab\artifacts\entry-default-unsigned.hap`，
+  签名副本 `G:\DHB-Lab\signing\entry-default-signed.hap`。
+
+### 2.13 Linux ↔ Kaihong HAP：TCP/PSK 认证
+
+- Linux 侧：Deepin 25 WSL 的 `dhb serve --port 47821 --psk dhb-test`；
+- 网络：Windows 主机 `192.168.128.1:47821` 做 TCP proxy 到 WSL
+  `172.20.47.26:47821`（VMware NAT 无法直接暴露 WSL 端口）；
+- Kaihong HAP 设置 host `192.168.128.1`、port `47821`、PSK `dhb-test`；
+- HAP 日志：
+
+```text
+TCP connected to 192.168.128.1:47821
+peer: LAPTOP-AACOP06S (Deepin/UOS Linux)
+authenticated with LAPTOP-AACOP06S
+```
+
+- 结论：**Linux↔Kaihong 的 TCP + PSK 认证已经真实打通**。
+- 尚未完成：文件实际传输/接收（server 的 send-on-connect 测试文件路径曾失败，
+  未重跑到成功），以及剪贴板读取、软总线、Gate A/B。
 
 ## 3. 还没有证明
 
@@ -263,23 +322,51 @@ cmake --build build -j4
 | KLink 4.x Linux↔Linux CLOUD_SN lab 认证 | ✅ | `status 7 / reason 0`，双方有 `networkId` |
 | KLink 4.x ↔ OH 4.x/HarmonyOS 4.x 发现/PIN/可信列表 | ❌ | Gate A（docs/10） |
 | OpenHarmony 6.0 ↔ KaihongOS 6.x 认证/session | ❌ | Gate B（docs/10） |
-| KaihongOS 5.0.1：标准 HAP 先试装 | ❌ | 有设备先装当前 HAP；失败再切 API14。见 docs/18 |
+| KaihongOS 6.1.1.11：标准 HAP 安装/启动 | ✅ | `hdc install` + `aa start`；见 2.13 |
+| Linux（WSL）↔ Kaihong HAP：TCP/PSK 认证 | ✅ | HAP 日志 `authenticated with LAPTOP-AACOP06S` |
+| Linux ↔ Kaihong HAP：文件传输 | ❌ | send-on-connect 测试未跑到成功 |
 | Linux 内核/PipeWire/uinput | ❌ | M0 的 Deepin 侧 demo |
-| HarmonyOS HAP 编译（DevEco 26 / SDK 26） | ✅ 上次 unsigned | 2026-10-30 改动后未重编 |
+| HarmonyOS HAP 编译（DevEco 26 / SDK 26） | ✅ 2026-11-05 signed | 209487 unsigned；签名后 246634；见 2.13 |
+| Kaihong x86 VM：hdc 连接 | ✅ | `192.168.128.10:10178` |
 | DTK6 tray 完整 DDE 面板 | ❌ | 只验证了插件加载，无 DDE 会话 |
 | `dhb-gui` | ❌ | 未写/未编译 |
 | Linyaps `dhb` 运行 | ❌ | WSL 容器 remount 失败 |
-| HAP 真机签名/安装/运行 | ❌ | 配置签名 + 连接真机/模拟器 |
+| HAP 真机签名/安装/运行 | ✅ Kaihong x86 | 华为 HarmonyOS 真机仍未验 |
 | 屏幕协同（采集/编码/解码/回控） | ❌（仅设计） | M2 |
 | 性能（1080p30、CPU、文件吞吐） | ❌ | M2 基准 |
 | 传输加密 | ❌（TCP 明文，仅开发） | M1 TLS 1.3 |
 
 ## 4. 结论
 
-**核心协议、认证、文件引擎、发现、TCP 双向传输已经在 Windows/MSYS2、Ubuntu 22.04 容器与 Deepin 25 WSL 跑通；Deepin 25 上 `dhb-daemon` 的 D-Bus + Pair/SendFile 闭环、DTK6 tray 插件加载、`dhb` CLI 的 Linyaps build/export 已通过。KLink 4.x host 栈已编译并完成两容器 COAP 发现 + CLOUD_SN lab 认证；HarmonyOS HAP 已用 DevEco 26 编译通过（unsigned）。仍缺：生产 PIN 认证、OHOS/KaihongOS 真机、HAP 安装运行、Deepin/UOS 实机、完整 DDE 面板、Linyaps 运行。**
+**核心协议、认证、文件引擎、发现、TCP 双向传输已经在 Windows/MSYS2、Ubuntu 22.04 容器与 Deepin 25 WSL 跑通；Deepin 25 上 `dhb-daemon` 的 D-Bus + Pair/SendFile 闭环、DTK6 tray 插件加载、`dhb` CLI 的 Linyaps build/export 已通过。HarmonyOS HAP 已在 G 盘 DevEco 工具链上重编、签名，并安装/启动于 KaihongOS 6.1.1.11（API 23，x86_64）；HAP 通过 TCP proxy 连到 Deepin WSL `dhb serve`，完成 PSK 认证。仍缺：文件实传、生产 PIN、华为 HarmonyOS 真机、KLink 真机、Linyaps runtime、完整 DDE 面板。**
 
 因此当前状态是：
 
 > **可运行的 Linux/ArkTS 双端骨架 + 可复现的 POSIX 端到端证据**，不是“已在 Deepin 25 + KaihongOS 上验证过的 MVP”。
 
 M0 的下一步不变：KLink 4.x 在 Deepin 25 上编出来并对上 OH 4.x；OpenHarmony 6.0 的现代 profile 对上 KaihongOS 6.x；先只要求“认证/可信关系”，不要求文件。
+
+## 5. 链路状态速查
+
+> 一句话：**没有“4.x、6.x 都通了”。4.x 只到 Linux↔Linux 容器发现 +
+> CLOUD_SN lab 认证；6.x 还没跑；Linux↔HarmonyOS 没有真机验证。**
+
+| 链路 | 发现 | 认证 | session/字节流 | 文件 | 当前结论 |
+|---|---|---|---|---|---|
+| KLink 4.x Linux↔Linux（两容器） | ✅ COAP | ⚠️ CLOUD_SN lab 通过；PIN ❌ | ❌ | ❌ | 只到 lab 可信关系 |
+| KLink 4.x Linux↔OH 4.x/华为 4.x | ❌ | ❌ | ❌ | ❌ | Gate A 未过 |
+| OpenHarmony 6.x host build | ❌ | ❌ | ❌ | ❌ | 只有源码 diff/rebase 报告 |
+| OH 6.x ↔ KaihongOS 6.x | ❌ | ❌ | ❌ | ❌ | Gate B 未过 |
+| KLink 4.x ↔ 6.x | ❌ | ❌ | ❌ | ❌ | 不假设原生互通 |
+| DHB TCP Linux 同机/回环 | n/a | ✅ PSK | ✅ TCP | ✅ 逐字节校验 | 可运行 |
+| DHB TCP 两台独立 Linux | n/a | 未单独测 | 未单独测 | 未单独测 | 不能宣称已跨机验证 |
+| DHB TCP Linux ↔ HAP | n/a | ❌ HAP 未安装 | ❌ | ❌ | 代码路径有，未验证 |
+| HAP ↔ HAP | n/a | ❌ | ❌ | ❌ | 未实现/未测 |
+
+补充：
+
+- KLink 4.x 的 `CLOUD_SN` 是 **lab 放行策略**，不是生产认证，也不等于 Gate A。
+- 6.x 不能拿 openEuler 3.2 代替；OpenHarmony 6.0 源还没有 Linux host build。
+- DHB 的 TCP 链路不依赖软总线；它是当前唯一可运行的文件/剪贴板路径。
+- HAP 上次编译通过（unsigned），但 **没有安装到任何 HarmonyOS/KaihongOS 设备**，
+  所以“Linux↔鸿蒙”目前只能写“未验证”，不能写“通了”。

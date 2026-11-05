@@ -22,7 +22,8 @@ DHB 是一个开源的跨端协同桥：Linux 侧是原生 C++17 CLI/daemon，�
 | **文本剪贴板** | ✅ 协议与客户端代码完成 | HAP UI 已接，真机权限/行为待验证 |
 | **Linux CLI** | ✅ 可用 | `serve` / `send` / `pair` / `recv` / `discover` / `doctor` / `selftest` |
 | **Deepin 桌面 MVP** | 🧪 实验可用 | `dhb-daemon` D-Bus + Pair/SendFile、DTK6 tray 插件加载、`dhb` CLI Linyaps build/export；无完整 DDE 面板，Linyaps runtime 未验 |
-| **HarmonyOS HAP** | ✅ 上次编译通过（unsigned） | DevEco 26 / SDK 26；2026-10-30 caps/续传改动后未重编；`runtimeOS: HarmonyOS`，不是 Kaihong profile；未签名、未安装 |
+| **HarmonyOS HAP** | ✅ 2026-11-05 签名/安装/启动 | 重编 209487 bytes，签名 246634 bytes；KaihongOS **6.1.1.11 / API 23 / x86_64**；未在华为真机验证 |
+| **Linux ↔ Kaihong HAP** | 🧪 TCP/PSK 已通 | HAP 日志 `authenticated with LAPTOP-AACOP06S`；文件实传未验 |
 | **KLink 4.x lab** | 🧪 实验可用 | Linux host build、双容器 COAP 发现、CLOUD_SN lab 认证 |
 | **dsoftbus 6.x** | 📐 研究中 | 差异报告与 rebase 计划完成；Linux host build 未开始 |
 | **TLS 1.3** | 🚧 未实现 | 当前 TCP 明文，仅限开发/可信局域网 |
@@ -51,8 +52,10 @@ DHB 是一个开源的跨端协同桥：Linux 侧是原生 C++17 CLI/daemon，�
 
 ## 当前实现边界（重要）
 
-- **HAP 是 unsigned 且不是 Kaihong profile**：`entry-default-unsigned.hap` 已生成，但 `runtimeOS: HarmonyOS` / target 20；KaihongOS 5.0.1 是 API 11/14，需单独 API 14 profile，尚未构建/安装。
-- **没有 OHOS/KaihongOS 真机认证**：KLink 只在 Linux↔Linux 容器里跑通发现和 CLOUD_SN lab 认证；PIN 仍失败。
+- **HAP 已在 Kaihong x86 上签名/安装/启动**：设备是 KaihongOS 6.1.1.11（API 23，x86_64）；**华为 HarmonyOS 真机仍未验**。
+- **Linux↔Kaihong 只到 TCP/PSK 认证**：通过 Windows TCP proxy 连 Deepin WSL `dhb serve`；文件实传尚未跑通。
+- **软总线没有真机认证**：KLink 只在 Linux↔Linux 容器里跑通发现和 CLOUD_SN lab 认证；PIN 仍失败。
+- **剪贴板发送未验证**：Kaihong 拒绝 `READ_PASTEBOARD` 权限，已从 manifest 移除；接收/协议代码仍在。
 - **TCP 是明文**：`--insecure` 只用于本机回环；生产版要 TLS 1.3，尚未实现。
 - **屏幕/输入/通知未实现**：README 里标 🚧 的能力都还在路线图，不是现成功能。
 - **Deepin 桌面只是 MVP**：tray 是最小状态项，不是完整 DDE 面板/GUI；Linyaps 只完成 build/export，WSL 里 runtime check 未过。

@@ -15,6 +15,10 @@
     {
       "name": "reason_datasync",
       "value": "用于发现并连接同一局域网内的 Deepin/UOS 设备"
+    },
+    {
+      "name": "reason_pasteboard",
+      "value": "Read clipboard text to sync it with Deepin/UOS"
     }
   ]
 }
