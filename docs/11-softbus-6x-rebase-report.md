@@ -183,3 +183,81 @@ scripts/fetch-softbus-sources.sh
 # 先让两个 Linux 实例 CoAP 发现
 # 再接 HiChain PIN
 ```
+
+## 10. 2026-11-07 P0 实际尝试（未通过）
+
+在 Deepin 25 WSL 上做了第一次真实 overlay，而不是只写计划：
+
+```text
+/root/softbus6
+  = KLink 4.x host skeleton (CMake/build scripts/config)
+  + OpenHarmony 6.0 dsoftbus subtree (replaces KLink's 4.x dsoftbus)
+  + KLink 4.x CMakeLists overlaid on the 6.0 tree
+```
+
+复现脚本：
+
+```bash
+scripts/setup-softbus6-lab.sh
+```
+
+配置阶段已经越过：
+
+```text
+-- Found OpenSSL 3.2.4
+host_system is linux ...
+devicetype is "PC"
+ifname is "eth0"
+```
+
+但停在 **4.x CMake 的源文件清单与 6.0 目录结构不兼容**：
+
+- `core/transmission/common/src/softbus_message_open_channel.c` 等 4.x 路径在 6.0 已消失/迁移；
+- `core/authentication/ipc/src/auth_client_proxy_standard.cpp`、
+  `sdk/authentication/ipc/src/auth_server_proxy.cpp` 不存在于 6.0；
+- `adapter`、`components/nstackx` 的 CMakeLists 在 6.0 目录下没有可枚举源文件；
+- 6.0 缺少 `core/common/dfx/hisysevent_adapter/include`、
+  `core/connection/wifi_direct/channel` 等 4.x include 目录。
+
+结论：
+
+> **KLink 的 143 个 CMakeLists 不能整体挪到 OH 6.0。**
+> 它们是 4.x 的“目录 + 源文件清单”，不是通用的 6.x 构建描述。
+
+P0 的下一步必须按 OH 6.0 的 `BUILD.gn` 重新生成源清单，而不是继续修 4.x 路径：
+
+1. 解析 `third_party/dsoftbus-6.0/**/BUILD.gn`，导出 `target -> sources/includes/deps`；
+2. 先只生成 `core/common`、`components/nstackx`、`adapter/linux` 三个最小库；
+3. 用 KLink 的 host flags（`host_system`、`DEFAULT_NET_INF_NAME_FOR_LINUX`）编译；
+4. 再补 CoAP/TCP；认证栈单独按 6.0 `security_device_auth` 走，不混 4.x。
+
+openEuler 3.2 的升级也必须等这层源清单稳定后再改 spec；现在把 3.2 spec 直接指向 6.0
+源码，只会在打包阶段重复同一批路径错误。
+
+### 10.1 P0 源清单（已生成）
+
+```bash
+python scripts/export-softbus6-manifest.py
+```
+
+当前结果（包含 tests）：
+
+```text
+OH6 BUILD.gn 源文件: 959
+adapter/common:      48
+components/nstackx:  57
+core/authentication: 47
+core/bus_center:    214
+core/connection:    142
+core/frame:         131
+core/common:         19
+sdk/*:                7
+tests/*:            819（不应进产品 target）
+```
+
+同时确认 KLink 4.x CMake 引用的路径有 **348 个在 OH6 不存在**（含变量展开前的模板路径）。
+这不是“补几个文件”，而是构建描述需要按 OH6 target 重建。
+
+下一刀：用 GN target 导出 `sources/include_dirs/deps`，先只生成
+`core/common` + `components/nstackx` + `adapter/common` 三个 host target；不碰
+`tests/*`、`dfx/dumper`、`br_proxy`、`wifi_direct_cpp`。
