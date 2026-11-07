@@ -3,6 +3,38 @@
 All notable changes to DHB are documented here. The project follows
 [Semantic Versioning](https://semver.org/) once it reaches a stable release.
 
+## v0.1.0-alpha.4 — 2026-11-07
+
+### Added
+
+- HAP uses ArkUI `PasteButton` for temporary clipboard-read authorization.
+- Linux ↔ HarmonyOS 2in1 text clipboard verified in both directions:
+  Linux→HAP `DHB_CLIPBOARD clipboard-from-linux`; HAP→Linux 20-byte
+  `clipboard-from-linux` received by server.
+- SoftBus6 P0: `nstackx_util` and `nstackx_ctrl` Linux static libraries build.
+
+### Not verified
+
+- Kaihong x86 clipboard same path, image/rich-text clipboard.
+- Screen sharing, keyboard/mouse control.
+- Full SoftBus6 server/CoAP, openEuler RPM.
+- Physical Huawei 2in1.
+
+## v0.1.0-alpha.3 — 2026-11-07
+
+### Added
+
+- HAP UI v2 signed/unsigned release assets (Kaihong x86_64/2in1 form factor).
+- Bidirectional Linux ↔ Kaihong HAP file transfer, verified by SHA-256:
+  Linux→HAP 18 bytes, HAP→Linux 19 bytes.
+- `dhb serve` 3s ping keepalive for idle HAP sessions.
+
+### Not verified
+
+- Bidirectional clipboard, screen sharing, keyboard/mouse control.
+- SoftBus 6.x host build / openEuler RPM.
+- Physical Huawei 2in1.
+
 ## v0.1.0-alpha.2 — 2026-11-06
 
 ### Added
@@ -32,6 +64,22 @@ All notable changes to DHB are documented here. The project follows
 - Scripts: `test-dbus-mvp.sh`, `test-dbus-pair.sh`, `test-tray-load.sh`.
 - `dhb serve`: 3s ping keepalive for idle HAP sessions; fixes stale
   "connected" UI with a dead socket before the first file offer.
+- `dhb serve --clipboard-on-connect TEXT` for inbound clipboard testing;
+  HAP logs `DHB_CLIPBOARD` on receive. End-to-end pasteboard verification is
+  still blocked by the Kaihong lock screen / 2in1 IME dialog.
+- HAP uses ArkUI `PasteButton` security component for temporary clipboard
+  read authorization instead of `READ_PASTEBOARD`; installed on the 2in1
+  emulator. Actual paste-and-send verification still pending.
+- SoftBus6 P0: `scripts/build-softbus6-common-p0.sh` compiles OH6
+  `core/common` into `libsoftbus6_common_p0.a` (9 objects, 159924 bytes),
+  adds a minimal hilog stub and a working `log_smoke`; `adapter/common` Linux
+  POSIX adapter also builds into `libsoftbus6_adapter_p0.a` (129760 bytes,
+  192 undefined symbols); securec/cJSON/sqlite host deps and `deps_smoke`
+  pass (`securec_rc=0 json_object=1 sqlite=3.37.2`); `link_smoke` links
+  common/adapter/deps and executes `SoftBusGetSysTimeMs`; `nstackx_util`
+  Linux library builds (109416 bytes, 185 undefined symbols); `nstackx_ctrl`
+  core also builds into `libsoftbus6_nstackx_ctrl_p0.a` (198736 bytes,
+  226 undefined symbols); full host server/CoAP still pending.
 
 ### Docs
 

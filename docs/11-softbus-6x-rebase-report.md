@@ -261,3 +261,148 @@ tests/*:            819（不应进产品 target）
 下一刀：用 GN target 导出 `sources/include_dirs/deps`，先只生成
 `core/common` + `components/nstackx` + `adapter/common` 三个 host target；不碰
 `tests/*`、`dfx/dumper`、`br_proxy`、`wifi_direct_cpp`。
+
+### 10.2 P0 `core/common` 静态库（已编出）
+
+```bash
+scripts/build-softbus6-common-p0.sh
+```
+
+不是整棵 6.0 server，而是先验证“6.0 源码可以在 Linux host 上用独立 CMake 编译”：
+
+```text
+softbus_bitmap.c.o
+softbus_json_utils.c.o
+message_handler.c.o
+softbus_network_utils.c.o
+softbus_queue.c.o
+softbus_feature_config.c.o
+softbus_tlv_utils.c.o
+softbus_utils.c.o
+sqlite3_utils.c.o
+-> libsoftbus6_common_p0.a  (159924 bytes)
++ libhilog_stub.a + log_smoke
+```
+
+- 脚本：`scripts/build-softbus6-common-p0.sh`
+- 产物副本：`G:\DHB-Lab\artifacts\libsoftbus6_common_p0.a`
+- SHA-256：`a395a13f684003c0b0d3e7b23bae7038dc0851a3b09f09f6b03905ef64f226c6`
+- `log_smoke` 已实际执行，输出 `hilog stub smoke`；说明 6.0 的
+  `COMM_LOGE` 日志宏可以被 host stub 接住。
+- 仍需解决：静态库仍有 **111 个未定义符号**（sqlite/cJSON/securec/pthread 等），
+  还没有链接成一个可运行的 SoftBus server；`adapter/nstackx/CoAP` 尚未接。
+- 结论：**P0 从“0 个 6.0 host target”推进到“第一个 6.0 common 静态库可复现编译”**，
+  但 full host server 仍未通过。
+
+### 10.3 P0 `adapter/common` Linux 静态库（已编出）
+
+同一脚本新增 `softbus6_adapter_p0`：
+
+```text
+adapter/common/kernel/posix/
+  lnn_ip_utils_adapter.c
+  softbus_adapter_file.c
+  softbus_adapter_mem.c
+  softbus_adapter_socket.c
+  softbus_adapter_thread.c
+  softbus_adapter_timer.c
+adapter/common/openssl/
+  softbus_adapter_crypto.c
+  softbus_aes_encrypt.c
+adapter/common/perf/softbus_adapter_perf.c
+adapter/common/range/softbus_adapter_range.c
+-> libsoftbus6_adapter_p0.a (129760 bytes)
+```
+
+- SHA-256：`2ada27cad888438de6c0a0ccbcb1f4126884334e3832e5c68bd719b23e894cbc`
+- 产物副本：`G:\DHB-Lab\artifacts\libsoftbus6_adapter_p0.a`
+- 编译警告：OpenSSL 3.0 对 AES/HMAC 旧 API 的 deprecated 警告，不是错误。
+- 仍有 **192 个未定义符号**（securec、sqlite、cJSON、OHOS access token、部分 POSIX 适配）。
+- 结论：**6.0 的 Linux POSIX adapter 已能独立编译成库**；下一步是把
+  common + adapter + securec/cJSON/sqlite 链接成一个可运行的 `softbus_server`。
+
+### 10.4 P0 host 依赖库（已编译并实测）
+
+同一脚本新增：
+
+```text
+libsecurec_p0.a   157134 bytes  sha256 9de2c45d...
+libcjson_p0.a      42050 bytes  sha256 4e9ab15c...
+libsqlite_p0.a   1485764 bytes  sha256 294d8880...
+```
+
+并新增 `deps_smoke`，实际执行结果：
+
+```text
+securec_rc=0 json_object=1 sqlite=3.37.2
+```
+
+说明 securec、cJSON、SQLite 三套 host 依赖均可编译、链接和运行。
+
+- 产物副本：`G:\DHB-Lab\artifacts\libsecurec_p0.a` /
+  `libcjson_p0.a` / `libsqlite_p0.a`
+- 仍未完成：`softbus6_common_p0` + `softbus6_adapter_p0` + deps 的
+  完整可执行链接；6.0 server 应用层/CoAP 尚未接。
+
+### 10.5 P0 第一个可运行 host 二进制（已通过）
+
+新增 `link_smoke`，链接：
+
+```text
+softbus6_common_p0 + softbus6_adapter_p0
++ securec + cJSON + sqlite + hilog stub
+```
+
+实际执行：
+
+```text
+softbus_time_ms=1794057253853
+```
+
+- 二进制：`link_smoke`，35352 bytes
+- SHA-256：`cbb7d9b1d7f9a00b11b9097bec8c8703971f9012582814486954e4307d4b8578`
+- 副本：`G:\DHB-Lab\artifacts\softbus6_link_smoke`
+- 意义：**OH6 common + Linux POSIX adapter + host deps 已经能链接成一个
+  真正执行的二进制**，而不是只躺在 `.a` 里。
+- 限制：只拉起了 `SoftBusGetSysTimeMs` 所需的 timer/thread 对象，
+  不是完整 server；nstackx/CoAP/TCP 尚未接。
+
+### 10.6 P0 `nstackx_util` Linux 库（已编出）
+
+同一脚本新增：
+
+```text
+nstackx_util/core/      8 个 .c
+nstackx_util/platform/unix/  7 个 .c
+-> libsoftbus6_nstackx_util_p0.a
+-> 109416 bytes
+SHA-256: bb3e84af1c02ec0d4b09d19ad1892d693133bab5d992d9c15561f6426f2b5819
+```
+
+- 产物副本：`G:\DHB-Lab\artifacts\libsoftbus6_nstackx_util_p0.a`
+- 发现并补上的 host 兼容问题：OH6 的 `sys_event.c` 假定构建环境已暴露
+  `fcntl.h`；CMake 加 `-include fcntl.h` 后通过。
+- 剩余警告：`CPU_ZERO/CPU_SET` 隐式声明（`_GNU_SOURCE`/sched 适配），不影响编译。
+- `nm -u` 仍有 **185 个未定义符号**；`nstackx_ctrl`/CoAP 尚未接。
+- 结论：**nstackx 的 util 层可以在 Linux host 编译成库**，但还不是可运行的发现服务。
+
+### 10.7 P0 `nstackx_ctrl` 核心库（已编出）
+
+同一脚本继续新增：
+
+```text
+nstackx_ctrl/core/ 12 个 .c
+（json_payload / device / device_local / device_remote /
+  dfinder_* / inet / smartgenius / statistics）
+-> libsoftbus6_nstackx_ctrl_p0.a
+-> 198736 bytes
+SHA-256: 5016140b2d35ca5ef4ad08305e1271c5195dd177998b3bdf6fc31b9f6641fb12
+```
+
+- 产物副本：`G:\DHB-Lab\artifacts\libsoftbus6_nstackx_ctrl_p0.a`
+- 补齐 `interfaces/kits/nstackx`（`nstackx_struct.h`）和
+  `third_party/coap/include`（`coap3/coap.h`）后编译通过。
+- `nm -u` 仍有 **226 个未定义符号**；`coap_discover` 源文件、
+  libcoap 链接、实际发现循环都还没接。
+- 结论：**nstackx_ctrl core 已经能作为 host 静态库编译**，
+  但“发现服务可运行”仍未证明。

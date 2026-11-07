@@ -406,6 +406,86 @@ authenticated with LAPTOP-AACOP06S
 - 结论：**Linux ↔ Kaihong HAP 的文件双向传输已闭环。**
 - 仍未完成：双向剪贴板、屏幕/输入、SoftBus6 host build、openEuler RPM、华为实体机。
 
+### 2.19 GitHub prerelease `v0.1.0-alpha.3`
+
+- Release: <https://github.com/THUDou/Deepin-HarmonyOS-Bridge/releases/tag/v0.1.0-alpha.3>
+- Source snapshot: `e2a7844`
+- Assets:
+  - `dhb-0.1.0-alpha3-kaihong-x86_64-signed.hap` — 267261 bytes，
+    SHA-256 `d9a61c9e...7a83`
+  - `dhb-0.1.0-alpha3-kaihong-x86_64-unsigned.hap` — 231477 bytes，
+    SHA-256 `29cd85b5...6b735`
+  - `SHA256SUMS`
+- Release 内容：HAP UI v2 + 双向文件 + keepalive；签名仍为 OpenHarmony
+  test certificate。
+- 明确未验证：双向剪贴板、屏幕/键鼠、SoftBus6 host build、openEuler RPM、
+  华为实体 2in1。
+
+### 2.20 剪贴板链路：代码已加，端到端未通过
+
+- `dhb serve --clipboard-on-connect TEXT` 已实现：认证后主动发送剪贴板帧。
+- HAP `onClipboard` 已加 `console.info('DHB_CLIPBOARD ...')`，用于 hilog 取证。
+- `hvigor assembleHap` **BUILD SUCCESSFUL**；C++ `dhb_tests` →
+  **all DHB tests passed**。
+- 端到端测试被环境阻塞：
+  - Kaihong 会话进入锁屏，`aa start` 返回
+    `device screen is locked during the application launch`；
+  - 切到 DevEco 2in1 模拟器后，输入主机地址触发小艺输入法授权弹窗，
+    接受弹窗后 HAP 窗口变为空白，未能稳定进入连接状态。
+- 因此：**剪贴板代码路径已存在，但不能写成“剪贴板已打通”。**
+- 下一步：解锁 Kaihong 或修复 2in1 输入法/空白窗口后，重跑
+  `--clipboard-on-connect` 并取证 pasteboard 实际内容。
+
+### 2.21 PasteButton：2in1 界面已接，未做最终读取验证
+
+- 按 HarmonyOS 安全控件方案，把原来的“发送剪贴板”按钮替换为
+  `PasteButton({ icon: PasteIconStyle.LINES, text: PasteDescription.PASTE })`。
+- 点击成功时 `PasteButtonOnClickResult.SUCCESS` 授予**当前剪贴板内容的临时读取权**；
+  不申请 `ohos.permission.READ_PASTEBOARD`。
+- `hvigor assembleHap` **BUILD SUCCESSFUL**；签名后安装到 DevEco 2in1：
+  `install bundle successfully`。
+- UI 截图：`G:\DHB-Lab\artifacts\2in1-pastebutton2.jpeg`，
+  协作区已显示系统“粘贴”控件。
+- 随后在 2.22 补做了连接、PasteButton 点击和 Linux 接收验证。
+
+### 2.22 Linux ↔ HarmonyOS 2in1 剪贴板双向（已通过）
+
+- 环境：DevEco 2in1 MateBook Pro（ARM，HarmonyOS 7.0.0/API 26）。
+- Linux server：
+
+```text
+dhb serve --port 47821 --psk dhb-test \
+  --clipboard-on-connect 'clipboard-from-linux'
+```
+
+- HAP 连接后，server 日志：
+
+```text
+[clipboard] sent on connect: clipboard-from-linux
+```
+
+- HAP hilog：
+
+```text
+A03d00/JSAPP: DHB_CLIPBOARD clipboard-from-linux
+A01b01/HOME: CLIPBOARD_WRITE_CONTENT totalSize=20, CONTENT_TYPE=0, ERR_CODE=0
+```
+
+- 用户点击 HAP 的系统 **PasteButton** 后，Linux server 收到：
+
+```text
+[session] clipboard update received (20 bytes)
+[clipboard] clipboard-from-linux
+```
+
+- 没有申请 `ohos.permission.READ_PASTEBOARD`；读取由 PasteButton 临时授权完成。
+- 证据：
+  - `G:\DHB-Lab\logs\clipboard-bidirectional-20261107.log`
+  - `G:\DHB-Lab\artifacts\2in1-paste-success.jpeg`
+  - `G:\DHB-Lab\artifacts\2in1-clipboard-received.jpeg`
+- 结论：**Linux ↔ HarmonyOS 2in1 的文本剪贴板双向闭环已通过验证。**
+- 限制：尚未测图片/文件 URI/富文本剪贴板；尚未测 Kaihong x86 的同一路径。
+
 ## 3. 还没有证明
 
 | 项 | 状态 | 下一步 |
@@ -427,6 +507,8 @@ authenticated with LAPTOP-AACOP06S
 | KaihongOS 6.1.1.11：标准 HAP 安装/启动 | ✅ | `hdc install` + `aa start`；见 2.13 |
 | Linux（WSL）↔ Kaihong HAP：TCP/PSK 认证 | ✅ | HAP 日志 `authenticated with LAPTOP-AACOP06S` |
 | Linux ↔ Kaihong HAP：文件传输 | ✅ 双向 | 18/19 bytes SHA-256 对账通过；见 2.17/2.18 |
+| Linux ↔ HarmonyOS 2in1：文本剪贴板 | ✅ 双向 | PasteButton 临时授权，20 bytes 往返；见 2.22 |
+| SoftBus6 P0：common/adapter/nstackx 库 | ✅ 静态库 | `link_smoke` 可执行；full server/CoAP ❌ |
 | Linux 内核/PipeWire/uinput | ❌ | M0 的 Deepin 侧 demo |
 | HarmonyOS HAP 编译（DevEco 26 / SDK 26） | ✅ 2026-11-05 signed | 209487 unsigned；签名后 246634；见 2.13 |
 | Kaihong x86 VM：hdc 连接 | ✅ | `192.168.128.10:10178` |
@@ -441,7 +523,7 @@ authenticated with LAPTOP-AACOP06S
 
 ## 4. 结论
 
-**核心协议、认证、文件引擎、发现、TCP 双向传输已经在 Windows/MSYS2、Ubuntu 22.04 容器与 Deepin 25 WSL 跑通；Deepin 25 上 `dhb-daemon` 的 D-Bus + Pair/SendFile 闭环、DTK6 tray 插件加载、`dhb` CLI 的 Linyaps build/export 已通过。HarmonyOS HAP 已在 G 盘 DevEco 工具链上重编、签名，并安装/启动于 KaihongOS 6.1.1.11（API 23，x86_64）和 DevEco **MateBook Pro 2in1 模拟器**（HarmonyOS 7.0.0，API 26，ARM）；HAP 通过 TCP proxy 连到 Deepin WSL `dhb serve`，完成 PSK 认证；Linux→Kaihong HAP（18-byte）和 Kaihong HAP→Linux（19-byte）文件均已落盘并通过 SHA-256 对账，双向文件闭环。仍缺：双向剪贴板、生产 PIN、华为实体 2in1、KLink 真机、Linyaps runtime、完整 DDE 面板。**
+**核心协议、认证、文件引擎、发现、TCP 双向传输已经在 Windows/MSYS2、Ubuntu 22.04 容器与 Deepin 25 WSL 跑通；Deepin 25 上 `dhb-daemon` 的 D-Bus + Pair/SendFile 闭环、DTK6 tray 插件加载、`dhb` CLI 的 Linyaps build/export 已通过。HarmonyOS HAP 已在 G 盘 DevEco 工具链上重编、签名，并安装/启动于 KaihongOS 6.1.1.11（API 23，x86_64）和 DevEco **MateBook Pro 2in1 模拟器**（HarmonyOS 7.0.0，API 26，ARM）；HAP 通过 TCP proxy 连到 Deepin WSL `dhb serve`，完成 PSK 认证；Linux→Kaihong HAP（18-byte）和 Kaihong HAP→Linux（19-byte）文件均已落盘并通过 SHA-256 对账，双向文件闭环；Linux↔2in1 文本剪贴板已通过 PasteButton 完成双向 20-byte 往返。仍缺：Kaihong x86 剪贴板同路径、图片/富文本剪贴板、生产 PIN、华为实体 2in1、KLink 真机、Linyaps runtime、完整 DDE 面板。**
 
 因此当前状态是：
 

@@ -299,14 +299,20 @@ KLink 4.x host skeleton + OH6 dsoftbus + KLink CMake
 - **Linux ↔ Kaihong HAP 双向文件实传**：
   Linux→HAP 18 bytes、HAP→Linux 19 bytes，SHA-256 均对账通过；
   server 增加 3s keepalive，修复空闲会话被对端关闭；
-- GitHub `v0.1.0-alpha.2`（旧 UI 的签名/未签名 HAP + SHA256SUMS）；
-- SoftBus6/KLink P0 overlay + 源清单 + openEuler 打包边界。
+- GitHub `v0.1.0-alpha.3`（HAP UI v2 + 双向文件 + keepalive 的签名/未签名 HAP + SHA256SUMS）；
+- SoftBus6/KLink P0 overlay + 源清单 + **core/common 静态库**（9 个 OH6 源文件）
+  + **adapter/common Linux 静态库**（10 个 OH6 源文件）
+  + securec/cJSON/sqlite host 依赖库 + `deps_smoke`
+  + `nstackx_util` / `nstackx_ctrl` Linux 静态库
+  + `link_smoke`（common+adapter+deps 已链接并执行 `SoftBusGetSysTimeMs`）；
+  full server/CoAP 未链接；
+- openEuler 打包边界。
 
 未交付：
 
 - 双向剪贴板发送；
 - 屏幕/键鼠/音频；
-- SoftBus6 host build；
+- SoftBus6 完整 host server（core/common 静态库已编出）；
 - openEuler RPM；
 - 华为实体 2in1。
 

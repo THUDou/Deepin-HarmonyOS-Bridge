@@ -40,6 +40,7 @@ void printUsage() {
       << "Usage:\n"
       << "  dhb serve   [--port 47821] [--discovery-port 47822] [--dir DIR]\n"
       << "              [--psk HEX] [--insecure] [--send-on-connect FILE]\n"
+      << "              [--clipboard-on-connect TEXT]\n"
       << "  dhb send    --host IP [--port 47821] [--psk HEX|--insecure] FILE...\n"
       << "  dhb pair    --host IP [--port 47821] [--psk HEX|--insecure]\n"
       << "  dhb recv    --host IP [--port 47821] [--psk HEX|--insecure]\n"
@@ -121,6 +122,7 @@ struct ServeOptions {
   std::string psk;
   bool insecure = false;
   std::string send_on_connect;
+  std::string clipboard_on_connect;
 };
 
 int runServe(const std::vector<std::string>& args) {
@@ -144,6 +146,8 @@ int runServe(const std::vector<std::string>& args) {
       options.insecure = true;
     } else if (args[i] == "--send-on-connect" && i + 1 < args.size()) {
       options.send_on_connect = args[++i];
+    } else if (args[i] == "--clipboard-on-connect" && i + 1 < args.size()) {
+      options.clipboard_on_connect = args[++i];
     } else {
       std::cerr << "unknown option: " << args[i] << "\n";
       return 2;
@@ -195,7 +199,8 @@ int runServe(const std::vector<std::string>& args) {
     config.is_client = false;
 
     std::thread([transport = std::move(transport), config,
-                 send_on_connect = options.send_on_connect]() mutable {
+                 send_on_connect = options.send_on_connect,
+                 clipboard_on_connect = options.clipboard_on_connect]() mutable {
       Session session(std::move(transport), config);
       session.setLogHandler([](std::string message) {
         std::cout << "[session] " << message << "\n";
@@ -221,6 +226,16 @@ int runServe(const std::vector<std::string>& args) {
       }
       std::cout << "[session] connected: " << session.peer().name << " ("
                 << session.peer().os << ")\n";
+
+      if (!clipboard_on_connect.empty()) {
+        std::string clipboard_error;
+        if (session.sendClipboard(clipboard_on_connect, &clipboard_error)) {
+          std::cout << "[clipboard] sent on connect: "
+                    << clipboard_on_connect << "\n";
+        } else {
+          std::cerr << "[clipboard] send failed: " << clipboard_error << "\n";
+        }
+      }
 
       if (!send_on_connect.empty()) {
         std::string send_error;

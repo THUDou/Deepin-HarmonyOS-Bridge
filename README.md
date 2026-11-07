@@ -5,14 +5,17 @@
 DHB 是一个开源的跨端协同桥：Linux 侧是原生 C++17 CLI/daemon，鸿蒙侧是 ArkTS/HAP。
 它不依赖 ADB、不要求开发者模式，也不把“兼容鸿蒙”做成一句口号——**同一套 DHB 协议，今天跑 TCP，明天可以跑 dsoftbus；软总线走不通时，自己的协议仍然能工作。**
 
-> **状态：`v0.1.0-alpha.2`，未完成。**
-> 文件/剪贴板/发现/PSK 认证/双端骨架已跑通；HAP 已签名、安装并在
-> **KaihongOS 6.1.1.11（API 23，x86_64）** 启动；Linux↔Kaihong HAP 的 TCP/PSK
-> 认证已通过，文件实传仍待验证；
-> KLink 4.x 已做到 Linux host build + 双容器 COAP 发现 + CLOUD_SN lab 认证；
+> **状态：`v0.1.0-alpha.4`，未完成。**
+> HAP 已签名、安装并在 **KaihongOS 6.1.1.11（API 23，x86_64）** 和
+> DevEco **MateBook Pro 2in1 模拟器（API 26，ARM）** 启动；
+> Linux↔Kaihong HAP 的 TCP/PSK 认证、**双向文件实传**（18/19 bytes，
+> SHA-256 对账）和 **Linux↔2in1 文本剪贴板**（PasteButton 临时授权）
+> 已通过；屏幕/键鼠、完整 SoftBus6 host server 仍未完成；
+> SoftBus6 P0 已有 common/adapter/nstackx_util/nstackx_ctrl 静态库 +
+> `link_smoke`；KLink 4.x 仍是独立 legacy 栈；
 > **Gate A（KLink ↔ OH 4.x）和 Gate B（OH 6.0 ↔ KaihongOS 6.x）尚未通过。**
 >
-> Release: <https://github.com/THUDou/Deepin-HarmonyOS-Bridge/releases/tag/v0.1.0-alpha.2>
+> Release: <https://github.com/THUDou/Deepin-HarmonyOS-Bridge/releases/tag/v0.1.0-alpha.4>
 
 ---
 
@@ -23,13 +26,13 @@ DHB 是一个开源的跨端协同桥：Linux 侧是原生 C++17 CLI/daemon，�
 | **双向文件流转** | ✅ CLI + HAP 双向 | HAP Linux→Kaihong 18-byte、Kaihong→Linux 19-byte，SHA-256 均对账通过 |
 | **PSK 认证 / 配对** | ✅ 可用 | 双 nonce + challenge + HMAC-SHA256；`dhb pair` 只认证不传文件 |
 | **局域网发现** | ✅ 可用 | UDP 47822 广播；失败可手动填 IP |
-| **文本剪贴板** | ✅ 协议与客户端代码完成 | HAP UI 已接，真机权限/行为待验证 |
+| **文本剪贴板** | ✅ Linux↔2in1 双向 | PasteButton 授权读取；20-byte 文本往返通过；图片/富文本未验 |
 | **Linux CLI** | ✅ 可用 | `serve` / `send` / `pair` / `recv` / `discover` / `doctor` / `selftest` |
 | **Deepin 桌面 MVP** | 🧪 实验可用 | `dhb-daemon` D-Bus + Pair/SendFile、DTK6 tray 插件加载、`dhb` CLI Linyaps build/export；无完整 DDE 面板，Linyaps runtime 未验 |
 | **HarmonyOS HAP** | ✅ 2026-11-05 签名/安装/启动 | 重编 209487 bytes，签名 246634 bytes；KaihongOS **6.1.1.11 / API 23 / x86_64**；DevEco **MateBook Pro 2in1 模拟器 / API 26**；未在华为实体机验证 |
 | **Linux ↔ Kaihong HAP** | ✅ TCP/PSK + 双向文件 | 18/19-byte 文件 SHA-256 对账通过；keepalive 修复空闲断连 |
 | **KLink 4.x lab** | 🧪 实验可用 | Linux host build、双容器 COAP 发现、CLOUD_SN lab 认证 |
-| **dsoftbus 6.x** | 📐 研究中 | 差异报告与 rebase 计划完成；Linux host build 未开始 |
+| **dsoftbus 6.x** | 🧪 P0 库/二进制 | OH6 common/adapter/nstackx_util/nstackx_ctrl + deps + `link_smoke`；full server/CoAP 未开始 |
 | **TLS 1.3** | 🚧 未实现 | 当前 TCP 明文，仅限开发/可信局域网 |
 | **屏幕协同 / 输入回控** | 🚧 路线图 | 采集、编码、回控均未实现 |
 | **通知 / 分布式硬件** | 🚧 路线图 | 仅有架构设计 |
