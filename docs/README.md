@@ -25,6 +25,7 @@
 21. [HAP 可移植性](19-hap-portability.md) — 先按标准 HAP/APK 开发，厂商 profile 后置。
 22. [Oink 参考与许可证边界](21-oink-reference-and-license.md) — 可借鉴 P2P/体验，不复制 GPL 代码或私有协议。
 23. [openEuler dsoftbus 3.2 rebase](../packaging/openeuler/README.md) — 3.2 → OH6/KLink 的打包边界与 P0/P1/P2/P3 检查表。
+24. [DHB 最终目标](22-dhb-final-goal.md) — Goal Mode 的成品状态、双栈架构、组件矩阵与分阶段验收。
 
 架构决策：
 

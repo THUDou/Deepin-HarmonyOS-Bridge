@@ -17,6 +17,13 @@
 
 关键纠正：
 
+- **openEuler 的 GitHub 镜像不能直接证明“V3.2”**：
+  `openeuler-mirror/dsoftbus_standard` 是 Apache-2.0，tags 只看到
+  `v3.1.2-release` / `v3.1.2.2-release`，master 最后提交 2022-09；
+  没有看到 `v3.2` tag。openEuler Embedded 22.03-LTS 文档把它描述为
+  **CoAP-only + 样例 IPC/SN + 双节点 client-server** 的嵌入式软总线，
+  不是 OH6 全量 dsoftbus。所谓“欧拉 V3.2”必须落到具体发行版
+  `dsoftbus.spec` 的 Source/patches 上再核对，不能拿镜像 tag 冒充。
 - **KLink 没有“2024 前停更”**。Gitee 公开镜像最新提交是 2025-08-01；但它的协议仍然停在 4.x，这点没变。
 - **openEuler 不是“纯血鸿蒙之后的新软总线”**。公开的 openEuler Embedded 软总线是 3.2，启动方式从 `softbus_server_main` 改为 `start_services.sh softbus`，依赖 binder/isula、CoAP-only、3.1/3.2 不互通；它比 KLink 4.x 更老，不是更新。
 - **6.x 的现代协议只能从 OpenHarmony 6.0-Release 取**。`communication_dsoftbus` 有 `OpenHarmony-5.0.x/5.1.0/6.0` 分支；6.0 Release 还新开了 `linkEnhance`（蓝牙多通道增强连接，API 20，三方应用可用但要求同 bundleName），注意它不是 dsoftbus 设备认证，不能拿来替代 HiChain/软总线。
