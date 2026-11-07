@@ -23,6 +23,8 @@
 19. [外部 Agent 提示词](../HANDOFF-PROMPT.md) — 可直接粘贴的交接提示词。
 20. [KaihongOS 桌面版 5.0.1 资料结论](18-kaihongos-desktop-5.0.1-notes.md) — VS Code/ARM64 devkit、API 11/14、HAP 签名与 Gate B 顺序。
 21. [HAP 可移植性](19-hap-portability.md) — 先按标准 HAP/APK 开发，厂商 profile 后置。
+22. [Oink 参考与许可证边界](21-oink-reference-and-license.md) — 可借鉴 P2P/体验，不复制 GPL 代码或私有协议。
+23. [openEuler dsoftbus 3.2 rebase](../packaging/openeuler/README.md) — 3.2 → OH6/KLink 的打包边界与 P0/P1/P2/P3 检查表。
 
 架构决策：
 
