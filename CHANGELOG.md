@@ -30,6 +30,8 @@ All notable changes to DHB are documented here. The project follows
   build/export succeeds with `--skip-run-container`.
 - Deepin 25 WSL verification: DTK6 6.7.47.1, Qt6 6.8.0, `ll-builder` 1.14.3.
 - Scripts: `test-dbus-mvp.sh`, `test-dbus-pair.sh`, `test-tray-load.sh`.
+- `dhb serve`: 3s ping keepalive for idle HAP sessions; fixes stale
+  "connected" UI with a dead socket before the first file offer.
 
 ### Docs
 
@@ -50,6 +52,10 @@ All notable changes to DHB are documented here. The project follows
 - D-Bus `Pair`/`SendFile`: 22-byte payload byte-identical on the server.
 - Tray plugin loader log: `Loaded plugin: "dhb-tray"`.
 - Kaihong HAP: `install bundle successfully`, `start ability successfully`.
+- Linux ↔ Kaihong HAP file transfer, both directions:
+  - Linux→HAP 18 bytes, SHA-256 `635a6bfc...`;
+  - HAP→Linux 19 bytes, SHA-256 `60bb2065...`.
+- `build-linux-r3/dhb_tests`: all DHB tests passed.
 - Linux↔Kaihong: HAP authenticated to Deepin WSL `dhb serve` through a
   Windows TCP proxy (`peer: LAPTOP-AACOP06S (Deepin/UOS Linux)`).
 - File transfer on that HAP session is **not** yet verified.

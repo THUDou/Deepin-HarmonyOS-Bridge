@@ -317,6 +317,95 @@ authenticated with LAPTOP-AACOP06S
 - 签名使用 SDK 中的 **OpenHarmony test certificate**，不是生产证书。
 - Release 说明明确标注：文件实传、华为真机、KLink/dsoftbus 未验证。
 
+### 2.15 HAP UI v2（设备卡 / 附近设备 / 协作）
+
+- 新增 HAP 产品化界面：可信设备卡、附近设备列表、手动连接、发送文件、
+  剪贴板状态、运行日志。
+- `hvigor assembleHap` **BUILD SUCCESSFUL**；签名后
+  `install bundle successfully`。
+- 首次 `aa start` 因 Kaihong 锁屏失败；手动解锁后再次 `aa start` →
+  **start ability successfully**。
+- UI v2 已在 Kaihong 桌面显示并截图：
+  `G:\DHB-Lab\artifacts\hap-ui-v2.png`。
+- 已看到：我的设备/尚未连接、连接 Deepin/UOS、附近设备 0 台、协作入口。
+- UI v2 **未进入** `v0.1.0-alpha.2` release（release 里是旧 UI）。
+- 下一步：文件实传；成功后打 `v0.1.0-alpha.3`。
+
+### 2.16 DevEco 2in1（华为 ARM PC）模拟器验证
+
+- DevEco 本地已有实例：`MateBook Pro`，**2in1**，
+  HarmonyOS **7.0.0(26.0.0)**，序列号 `127.0.0.1:5555`，API **26**。
+- 用 `hdc` 安装 UI v2 签名 HAP：
+  - `install bundle successfully`
+  - `aa start -a EntryAbility -b org.dhb.bridge` →
+    **start ability successfully**
+- UI v2 在 2in1 模拟器上真实显示：
+  `G:\DHB-Lab\artifacts\emulator-2in1.jpeg`（3120x2080）。
+- 截图里应用上方有“是否将应用自动添加至桌面？”系统弹窗，但 DHB 窗口本身可见：
+  我的设备/尚未连接、连接 Deepin/UOS、附近设备、协作、运行日志。
+- 这是 **Huawei 2in1 模拟器（ARM）**，不是华为实体机；不能写成“华为真机已验证”。
+- 仍不等于功能交付：文件实传、双向剪贴板、屏幕/输入都还没完成。
+
+### 2.17 Linux → Kaihong HAP 文件实传（单向，已通过）
+
+- 时间：2026-11-07。
+- Linux 侧：Deepin 25 WSL
+  `dhb serve --port 47821 --psk dhb-test --send-on-connect /root/dhb/send.txt`；
+- Kaihong HAP 通过 Windows TCP proxy `192.168.128.1:47821` 连接；
+- server 日志：
+
+```text
+[session] connected: x86_64_system (HarmonyOS)
+[file] sending on connect: /root/dhb/send.txt
+[file] sent: /root/dhb/send.txt
+[session] connection closed: connection closed
+[session] disconnected: x86_64_system
+```
+
+- Kaihong 实际落盘：
+  `/data/app/el2/100/base/org.dhb.bridge/haps/entry/files/received/send.txt.1794054132075`
+- 源文件与接收文件 **18 bytes，SHA-256 完全一致**：
+
+```text
+635a6bfc1ce1855e37478ad87b7e58ea8d884e42d12de5d0fe381ed378be700e
+```
+
+- 证据：
+  - `G:\DHB-Lab\logs\transfer-linux-to-kaihong-20261107.log`
+  - `G:\DHB-Lab\artifacts\kaihong-received-send.txt`
+  - `G:\DHB-Lab\artifacts\kaihong-linux-to-hap.png`
+- 结论：**Linux → Kaihong HAP 的文件内容传输已真实通过。**
+- 仍未完成：HAP → Linux 反向文件、双向剪贴板、屏幕/输入。
+
+### 2.18 Kaihong HAP → Linux 反向文件（已通过，双向闭环）
+
+- 修复：`runServe` 原来只是空转等待；HAP 空闲会话会被对端关闭，UI 却还显示“已连接”。
+  新增长连接 keepalive（每 3 秒 `session.ping()`，失败即退出 reader），并重建
+  `build-linux-r3/dhb`。
+- HAP 通过文件选择器发送：
+  `/storage/media/100/local/files/Docs/Download/dhb-from-kaihong.txt`
+- server 日志：
+
+```text
+[session] connected: x86_64_system (HarmonyOS)
+[session] incoming file: dhb-from-kaihong.txt (19 bytes, resume at 0)
+[file] saved: /root/dhb/recv/dhb-from-kaihong.txt
+```
+
+- Linux 接收文件 **19 bytes**，源/收 SHA-256 完全一致：
+
+```text
+60bb2065ae4517f983d249cf631655f906b83fb375a793417ba0573188058bad
+```
+
+- 证据：
+  - `G:\DHB-Lab\logs\transfer-kaihong-to-linux-20261107.log`
+  - `G:\DHB-Lab\artifacts\kaihong-hap-to-linux-received.txt`
+  - `G:\DHB-Lab\artifacts\kaihong-hap-to-linux.png`
+- `build-linux-r3/dhb_tests` → `all DHB tests passed`。
+- 结论：**Linux ↔ Kaihong HAP 的文件双向传输已闭环。**
+- 仍未完成：双向剪贴板、屏幕/输入、SoftBus6 host build、openEuler RPM、华为实体机。
+
 ## 3. 还没有证明
 
 | 项 | 状态 | 下一步 |
@@ -337,21 +426,22 @@ authenticated with LAPTOP-AACOP06S
 | OpenHarmony 6.0 ↔ KaihongOS 6.x 认证/session | ❌ | Gate B（docs/10） |
 | KaihongOS 6.1.1.11：标准 HAP 安装/启动 | ✅ | `hdc install` + `aa start`；见 2.13 |
 | Linux（WSL）↔ Kaihong HAP：TCP/PSK 认证 | ✅ | HAP 日志 `authenticated with LAPTOP-AACOP06S` |
-| Linux ↔ Kaihong HAP：文件传输 | ❌ | send-on-connect 测试未跑到成功 |
+| Linux ↔ Kaihong HAP：文件传输 | ✅ 双向 | 18/19 bytes SHA-256 对账通过；见 2.17/2.18 |
 | Linux 内核/PipeWire/uinput | ❌ | M0 的 Deepin 侧 demo |
 | HarmonyOS HAP 编译（DevEco 26 / SDK 26） | ✅ 2026-11-05 signed | 209487 unsigned；签名后 246634；见 2.13 |
 | Kaihong x86 VM：hdc 连接 | ✅ | `192.168.128.10:10178` |
 | DTK6 tray 完整 DDE 面板 | ❌ | 只验证了插件加载，无 DDE 会话 |
 | `dhb-gui` | ❌ | 未写/未编译 |
 | Linyaps `dhb` 运行 | ❌ | WSL 容器 remount 失败 |
-| HAP 真机签名/安装/运行 | ✅ Kaihong x86 | 华为 HarmonyOS 真机仍未验 |
+| HAP 真机签名/安装/运行 | ✅ Kaihong x86 | 华为实体 2in1 仍未验 |
+| DevEco 2in1 模拟器（MateBook Pro / ARM） | ✅ 安装/启动 | HarmonyOS 7.0.0(26.0.0)，API 26；见 2.16 |
 | 屏幕协同（采集/编码/解码/回控） | ❌（仅设计） | M2 |
 | 性能（1080p30、CPU、文件吞吐） | ❌ | M2 基准 |
 | 传输加密 | ❌（TCP 明文，仅开发） | M1 TLS 1.3 |
 
 ## 4. 结论
 
-**核心协议、认证、文件引擎、发现、TCP 双向传输已经在 Windows/MSYS2、Ubuntu 22.04 容器与 Deepin 25 WSL 跑通；Deepin 25 上 `dhb-daemon` 的 D-Bus + Pair/SendFile 闭环、DTK6 tray 插件加载、`dhb` CLI 的 Linyaps build/export 已通过。HarmonyOS HAP 已在 G 盘 DevEco 工具链上重编、签名，并安装/启动于 KaihongOS 6.1.1.11（API 23，x86_64）；HAP 通过 TCP proxy 连到 Deepin WSL `dhb serve`，完成 PSK 认证。仍缺：文件实传、生产 PIN、华为 HarmonyOS 真机、KLink 真机、Linyaps runtime、完整 DDE 面板。**
+**核心协议、认证、文件引擎、发现、TCP 双向传输已经在 Windows/MSYS2、Ubuntu 22.04 容器与 Deepin 25 WSL 跑通；Deepin 25 上 `dhb-daemon` 的 D-Bus + Pair/SendFile 闭环、DTK6 tray 插件加载、`dhb` CLI 的 Linyaps build/export 已通过。HarmonyOS HAP 已在 G 盘 DevEco 工具链上重编、签名，并安装/启动于 KaihongOS 6.1.1.11（API 23，x86_64）和 DevEco **MateBook Pro 2in1 模拟器**（HarmonyOS 7.0.0，API 26，ARM）；HAP 通过 TCP proxy 连到 Deepin WSL `dhb serve`，完成 PSK 认证；Linux→Kaihong HAP（18-byte）和 Kaihong HAP→Linux（19-byte）文件均已落盘并通过 SHA-256 对账，双向文件闭环。仍缺：双向剪贴板、生产 PIN、华为实体 2in1、KLink 真机、Linyaps runtime、完整 DDE 面板。**
 
 因此当前状态是：
 

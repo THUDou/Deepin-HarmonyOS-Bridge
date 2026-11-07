@@ -232,8 +232,22 @@ int runServe(const std::vector<std::string>& args) {
         }
       }
 
+      int idle_ticks = 0;
       while (session.connected()) {
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        // Keep an idle session alive and surface a half-closed TCP path
+        // instead of leaving the peer UI showing a stale "connected" state.
+        if (++idle_ticks >= 6) {
+          idle_ticks = 0;
+          std::uint64_t rtt_ms = 0;
+          std::string ping_error;
+          if (!session.ping(&rtt_ms, &ping_error)) {
+            if (session.connected()) {
+              std::cerr << "[session] keepalive failed: " << ping_error << "\n";
+            }
+            break;
+          }
+        }
       }
       std::cout << "[session] disconnected: " << session.peer().name << "\n";
     }).detach();

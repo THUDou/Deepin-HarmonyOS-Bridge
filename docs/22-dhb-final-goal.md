@@ -231,6 +231,8 @@ KLink 4.x host skeleton + OH6 dsoftbus + KLink CMake
 ### Phase 0 · 真实文件闭环（当前优先）
 
 - HAP ↔ Deepin WSL/Deepin VM 文件传输；
+  - Linux → Kaihong HAP：**已通过**（18 bytes，SHA-256 对账）；
+  - HAP → Linux：**已通过**（19 bytes，SHA-256 对账，keepalive）；
 - SHA-256 对账、断点续传、失败重试；
 - 2in1 模拟器与 Kaihong x86 都跑同一 HAP；
 - 产出：传输日志、校验和、验证记录、`alpha.3` HAP。
@@ -294,12 +296,14 @@ KLink 4.x host skeleton + OH6 dsoftbus + KLink CMake
 - HAP UI v2 安装/启动于 DevEco MateBook Pro 2in1 模拟器
   （HarmonyOS 7.0.0，API 26，ARM）；
 - Linux ↔ Kaihong TCP/PSK 认证；
+- **Linux ↔ Kaihong HAP 双向文件实传**：
+  Linux→HAP 18 bytes、HAP→Linux 19 bytes，SHA-256 均对账通过；
+  server 增加 3s keepalive，修复空闲会话被对端关闭；
 - GitHub `v0.1.0-alpha.2`（旧 UI 的签名/未签名 HAP + SHA256SUMS）；
 - SoftBus6/KLink P0 overlay + 源清单 + openEuler 打包边界。
 
 未交付：
 
-- 文件实传；
 - 双向剪贴板发送；
 - 屏幕/键鼠/音频；
 - SoftBus6 host build；

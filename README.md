@@ -20,14 +20,14 @@ DHB 是一个开源的跨端协同桥：Linux 侧是原生 C++17 CLI/daemon，�
 
 | 能力 | 状态 | 说明 |
 |---|---|---|
-| **双向文件流转** | ✅ 可用 | `serve`/`send`/`recv`，断点续传、`.part`、SHA-256 校验 |
+| **双向文件流转** | ✅ CLI + HAP 双向 | HAP Linux→Kaihong 18-byte、Kaihong→Linux 19-byte，SHA-256 均对账通过 |
 | **PSK 认证 / 配对** | ✅ 可用 | 双 nonce + challenge + HMAC-SHA256；`dhb pair` 只认证不传文件 |
 | **局域网发现** | ✅ 可用 | UDP 47822 广播；失败可手动填 IP |
 | **文本剪贴板** | ✅ 协议与客户端代码完成 | HAP UI 已接，真机权限/行为待验证 |
 | **Linux CLI** | ✅ 可用 | `serve` / `send` / `pair` / `recv` / `discover` / `doctor` / `selftest` |
 | **Deepin 桌面 MVP** | 🧪 实验可用 | `dhb-daemon` D-Bus + Pair/SendFile、DTK6 tray 插件加载、`dhb` CLI Linyaps build/export；无完整 DDE 面板，Linyaps runtime 未验 |
-| **HarmonyOS HAP** | ✅ 2026-11-05 签名/安装/启动 | 重编 209487 bytes，签名 246634 bytes；KaihongOS **6.1.1.11 / API 23 / x86_64**；未在华为真机验证 |
-| **Linux ↔ Kaihong HAP** | 🧪 TCP/PSK 已通 | HAP 日志 `authenticated with LAPTOP-AACOP06S`；文件实传未验 |
+| **HarmonyOS HAP** | ✅ 2026-11-05 签名/安装/启动 | 重编 209487 bytes，签名 246634 bytes；KaihongOS **6.1.1.11 / API 23 / x86_64**；DevEco **MateBook Pro 2in1 模拟器 / API 26**；未在华为实体机验证 |
+| **Linux ↔ Kaihong HAP** | ✅ TCP/PSK + 双向文件 | 18/19-byte 文件 SHA-256 对账通过；keepalive 修复空闲断连 |
 | **KLink 4.x lab** | 🧪 实验可用 | Linux host build、双容器 COAP 发现、CLOUD_SN lab 认证 |
 | **dsoftbus 6.x** | 📐 研究中 | 差异报告与 rebase 计划完成；Linux host build 未开始 |
 | **TLS 1.3** | 🚧 未实现 | 当前 TCP 明文，仅限开发/可信局域网 |
